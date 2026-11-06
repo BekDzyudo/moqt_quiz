@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Login-parol varaqasi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0d7cbb}a:hover{color:#0f4a7c}
+</style>
+</helmet>
+<div style="width: 794px; height: 1123px; box-sizing: border-box; padding: 48px; background: #ffffff; font-family: Manrope, 'Segoe UI', system-ui, sans-serif; color: #10202e; display: flex; flex-direction: column; gap: 20px;">
+  <header style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding-bottom: 12px; border-bottom: 2px solid #283770;">
+    <div>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #283770;">KASBIY TA'LIMNI RIVOJLANTIRISH INSTITUTI</div>
+      <h1 style="margin: 4px 0 0; font-size: 20px; line-height: 28px; font-weight: 700;">Chiqish testi uchun login va parollar</h1>
+    </div>
+    <div style="text-align: right; font-size: 13px; line-height: 19px; color: #4a5b6b;">Guruh 2026-11-AKT-01<br>1-sahifa / 3</div>
+  </header>
+  <p style="margin: 0; font-size: 13px; line-height: 19px; color: #4a5b6b;">Kartochkalarni chiziq bo'ylab kesib, har bir tinglovchiga shaxsan topshiring. Kirish manzili: test.moqt.uz</p>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px dashed #7b93a8; border-left: 1px dashed #7b93a8;">
+    <sc-for list="{{cards}}" as="c" hint-placeholder-count="10">
+      <div style="height: 168px; box-sizing: border-box; padding: 20px; border-right: 1px dashed #7b93a8; border-bottom: 1px dashed #7b93a8; display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-size: 15px; line-height: 20px; font-weight: 700;">{{c.name}}</div>
+        <div style="display: grid; grid-template-columns: 64px 1fr; row-gap: 6px; font-size: 13px; align-items: center;">
+          <span style="color: #4a5b6b; font-weight: 600;">Login</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 17px; font-weight: 600;">{{c.login}}</span>
+          <span style="color: #4a5b6b; font-weight: 600;">Parol</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 17px; font-weight: 600;">{{c.pass}}</span>
+        </div>
+        <div style="margin-top: auto; font-size: 12px; color: #4a5b6b;">AKT — maxsus fanlar · faqat shu test uchun</div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":794,"height":1123}}'>
+class Component extends DCLogic {
+renderVals() {
+  const cards = [
+    ['Abdullayev Jasur Baxtiyorovich', 'AKT01-001', 'k7Pm4x'],
+    ['Azimova Malika Sobirovna', 'AKT01-002', 'Rt9wq3'],
+    ['Bakirov Otabek Ravshanovich', 'AKT01-003', 'h4Nz8e'],
+    ['Davlatova Shahnoza Erkinovna', 'AKT01-004', 'Wm2xa7'],
+    ['Ergashev Ulug‘bek Toirovich', 'AKT01-005', 'p8Kc3v'],
+    ['Fayzullayeva Kamola Ikromovna', 'AKT01-006', 'Ys5tg9'],
+    ['G‘aniyev Sherzod Anvarovich', 'AKT01-007', 'b3Hx7m'],
+    ['Ergasheva Nilufar Akmalovna', 'AKT01-008', 'Qe6rn2'],
+    ['Hamidov Doniyor Alisherovich', 'AKT01-009', 'v9Lp4s'],
+    ['Ismoilova Zarina Baxromovna', 'AKT01-010', 'Tc7ky5']
+  ].map(([name, login, pass]) => ({ name: name.split('‘').join("'"), login, pass }));
+  return { cards };
+}
+}
+</script>
+</body>
+</html>

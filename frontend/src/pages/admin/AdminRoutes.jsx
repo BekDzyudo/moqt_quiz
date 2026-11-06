@@ -1,0 +1,46 @@
+import { lazy } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import AdminLayout from '../../components/admin/AdminLayout.jsx'
+import { ADMIN_PAGES, SUPERADMIN_PAGES } from '../../components/admin/navigation.js'
+import { RequireRole } from '../../routes/guards.jsx'
+import AdminsPage from './AdminsPage.jsx'
+import AuditPage from './AuditPage.jsx'
+import PlaceholderPage from './PlaceholderPage.jsx'
+import QuestionSetsPage from './QuestionSetsPage.jsx'
+import QuestionsPage from './QuestionsPage.jsx'
+
+const UiKitPage = import.meta.env.DEV ? lazy(() => import('./UiKitPage.jsx')) : null
+
+const SCREENS = {
+  '/admin/savollar': QuestionsPage,
+  '/admin/toplamlar': QuestionSetsPage,
+  '/admin/adminlar': AdminsPage,
+  '/admin/jurnal': AuditPage,
+}
+
+const routePath = (to) => to.replace('/admin', '').replace(/^\//, '')
+
+const screenRoute = (page) => {
+  const Screen = SCREENS[page.to] ?? PlaceholderPage
+  const element = <Screen page={page} />
+  return page.to === '/admin' ? (
+    <Route key={page.to} index element={element} />
+  ) : (
+    <Route key={page.to} path={routePath(page.to)} element={element} />
+  )
+}
+
+export default function AdminRoutes() {
+  return (
+    <Routes>
+      <Route element={<AdminLayout />}>
+        {ADMIN_PAGES.map(screenRoute)}
+        <Route element={<RequireRole roles={['superadmin']} />}>
+          {SUPERADMIN_PAGES.map(screenRoute)}
+        </Route>
+        {import.meta.env.DEV && <Route path="ui" element={<UiKitPage />} />}
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Route>
+    </Routes>
+  )
+}

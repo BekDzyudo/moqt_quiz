@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Amallar jurnali</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0d7cbb}a:hover{color:#0f4a7c}
+</style>
+</helmet>
+<div style="min-height: 900px; display: flex; flex-wrap: wrap; background: #f4f8fd; font-family: Manrope, 'Segoe UI', system-ui, sans-serif; color: #10202e;">
+  <nav aria-label="Asosiy menyu" style="flex: 1 1 248px; background: #ffffff; border-right: 1px solid #e2eaf2; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px;">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 0 8px 20px;">
+      <div style="width: 36px; height: 36px; border-radius: 999px; background: #1763a0; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">KT</div>
+      <div style="font-size: 15px; font-weight: 700;">MOQT Test</div>
+    </div>
+    <sc-for list="{{nav}}" as="it" hint-placeholder-count="5">
+      <a href="{{it.href}}" style="{{it.style}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.d}}"></path></svg>{{it.label}}</a>
+    </sc-for>
+    <div style="padding: 20px 12px 8px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.12em; color: #4a5b6b;">SUPERADMIN</div>
+    <sc-for list="{{nav2}}" as="it" hint-placeholder-count="2">
+      <a href="{{it.href}}" style="{{it.style}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.d}}"></path></svg>{{it.label}}</a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 16px 8px 0; border-top: 1px solid #e2eaf2; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+      <div>
+        <div style="font-size: 15px; font-weight: 600;">Raqamlashtirish bo'limi</div>
+        <div style="font-size: 13px; color: #4a5b6b;">Superadmin</div>
+      </div>
+      <a href="Main.dc.html" aria-label="Chiqish" style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid #7b93a8; color: #4a5b6b; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg></a>
+    </div>
+  </nav>
+  <main style="flex: 999 1 560px; min-width: 0; padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px;">
+    <header style="background: #ffffff; border: 1px solid #e2eaf2; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+      <div style="width: 44px; height: 44px; border-radius: 12px; background: #d9edf9; color: #1763a0; display: flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8"></path></svg></div>
+      <div style="flex: 1 1 240px;">
+        <h1 style="margin: 0; font-size: 26px; line-height: 34px; font-weight: 700;">Amallar jurnali</h1>
+        <p style="margin: 0; font-size: 15px; line-height: 23px; color: #4a5b6b;">Kim, qachon, nima qildi — o'zgartirib bo'lmaydigan yozuvlar</p>
+      </div>
+      <button type="button" style="height: 44px; padding: 0 16px; border: 1px solid #7b93a8; border-radius: 12px; background: #ffffff; color: #10202e; font-family: inherit; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">Excel<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg></button>
+    </header>
+    <section style="background: #ffffff; border: 1px solid #e2eaf2; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <select aria-label="Foydalanuvchi" style="flex: 1 1 200px; height: 44px; padding: 0 12px; border: 1px solid #7b93a8; border-radius: 12px; background: #ffffff; font-family: inherit; font-size: 15px; color: #10202e;"><option>Barcha foydalanuvchilar</option></select>
+        <select aria-label="Amal turi" style="flex: 1 1 200px; height: 44px; padding: 0 12px; border: 1px solid #7b93a8; border-radius: 12px; background: #ffffff; font-family: inherit; font-size: 15px; color: #10202e;"><option>Barcha amallar</option><option>Test ochish/yopish</option><option>Login-parol</option><option>Ekrandan chiqish</option></select>
+        <input type="date" aria-label="Sana" value="2026-11-06" style="flex: 1 1 180px; height: 44px; padding: 0 12px; border: 1px solid #7b93a8; border-radius: 12px; font-family: inherit; font-size: 15px; color: #10202e;">
+      </div>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px; min-width: 860px;">
+          <thead><tr style="text-align: left; color: #4a5b6b; font-size: 13px;"><th style="padding: 10px 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">Vaqt</th><th style="padding: 10px 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">Kim</th><th style="padding: 10px 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">Amal</th><th style="padding: 10px 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">Obyekt</th><th style="padding: 10px 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">IP</th></tr></thead>
+          <tbody>
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+              <tr><td style="padding: 12px; border-bottom: 1px solid #e2eaf2; color: #4a5b6b; font-variant-numeric: tabular-nums;">{{r.t}}</td><td style="padding: 12px; border-bottom: 1px solid #e2eaf2; font-weight: 600;">{{r.who}}</td><td style="padding: 12px; border-bottom: 1px solid #e2eaf2;"><span style="{{r.aStyle}}">{{r.a}}</span></td><td style="padding: 12px; border-bottom: 1px solid #e2eaf2;">{{r.obj}}</td><td style="padding: 12px; border-bottom: 1px solid #e2eaf2; color: #4a5b6b; font-size: 13px; font-family: 'IBM Plex Mono', ui-monospace, monospace;">{{r.ip}}</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+  const active = 'jurnal';
+  const base = 'display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 12px; text-decoration: none; font-size: 15px; ';
+  const on = base + 'background: #d9edf9; color: #0f4a7c; font-weight: 700;';
+  const off = base + 'background: transparent; color: #4a5b6b; font-weight: 500;';
+  const mk = (list) => list.map(([k, label, href, d]) => ({ label, href, d, style: k === active ? on : off }));
+  const nav = mk([
+    ['panel', 'Bosh panel', 'AdminPanel.dc.html', 'M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z'],
+    ['bank', 'Savollar banki', 'SavollarBanki.dc.html', 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'],
+    ['toplam', "Savol to'plamlari", 'Toplamlar.dc.html', 'm12 2 10 5-10 5L2 7zM2 17l10 5 10-5M2 12l10 5 10-5'],
+    ['guruh', 'Guruhlar', 'Guruhlar.dc.html', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'],
+    ['natija', 'Natijalar', 'Natijalar.dc.html', 'M3 3v18h18M7 16v-5M12 16V8M17 16v-3']
+  ]);
+  const nav2 = mk([
+    ['admin', 'Adminlar', 'Adminlar.dc.html', 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'],
+    ['jurnal', 'Amallar jurnali', 'Jurnal.dc.html', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8']
+  ]);
+  const pill = 'display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; ';
+  const K = {
+    info: pill + 'background: #d9edf9; color: #0f4a7c;',
+    warn: pill + 'background: #f9eeda; color: #8a5300;',
+    bad: pill + 'background: #fbebeb; color: #c0342c;',
+    calm: pill + 'background: #eaf2fa; color: #4a5b6b;'
+  };
+  const rows = [
+    ['11:42:18', 'Yusupov Bekzod (tinglovchi)', 'Ekrandan chiqish', 'bad', '2026-11-AKT-01 · 5-marta', '10.12.4.57'],
+    ['11:40:03', 'Saidov Rustam (admin)', 'Chiqish kaliti ishlatildi', 'warn', 'AKT01-017 · sabab: kompyuter qotdi', '10.12.4.2'],
+    ['11:30:00', 'Xolmatova Dildora (admin)', 'Test ochildi', 'info', '2026-11-IQT-03', '10.31.0.8'],
+    ['10:55:41', 'Saidov Rustam (admin)', 'Qayta topshirishga ruxsat', 'warn', 'AKT01-011 · sabab: elektr oʻchdi', '10.12.4.2'],
+    ['10:00:00', 'Saidov Rustam (admin)', 'Test ochildi', 'info', '2026-11-AKT-01', '10.12.4.2'],
+    ['09:41:12', 'Saidov Rustam (admin)', 'Login-parol generatsiya', 'calm', '2026-11-AKT-01 · 30 ta', '10.12.4.2'],
+    ['09:12:30', 'Superadmin', 'Admin paroli oʻzgartirildi', 'warn', 'sam_mom', '10.0.0.5'],
+    ['08:58:04', 'Superadmin', "Admin qo'shildi", 'calm', 'far_mom', '10.0.0.5'],
+    ['08:30:47', 'Superadmin', 'Savollar API orqali yangilandi', 'calm', "AKT — maxsus fanlar · +24", '10.0.0.5']
+  ].map(([t, who, a, k, obj, ip]) => ({ t, who, a: a.replace('ʻ', "'"), aStyle: K[k], obj: obj.replace('ʻ', "'"), ip }));
+  return { nav, nav2, rows };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Tizimga kirish</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0d7cbb}a:hover{color:#0f4a7c}
+</style>
+</helmet>
+<div style="min-height: 900px; display: flex; flex-wrap: wrap; background: #f4f8fd; font-family: Manrope, 'Segoe UI', system-ui, sans-serif; color: #10202e;">
+  <section style="flex: 55 1 520px; min-height: 420px; position: relative; overflow: hidden; background: linear-gradient(142deg, #0f4a7c, #12629f 48%, #0d7cbb); color: #ffffff; padding: 56px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+    <div aria-hidden="true" style="position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 999px; background: rgba(255,255,255,0.07);"></div>
+    <div aria-hidden="true" style="position: absolute; left: -80px; bottom: -160px; width: 360px; height: 360px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.14);"></div>
+    <div style="display: flex; align-items: center; gap: 12px; position: relative;">
+      <div style="width: 44px; height: 44px; border-radius: 999px; background: #ffffff; color: #0f4a7c; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;">KT</div>
+      <div style="font-size: 15px; line-height: 20px; font-weight: 600;">Kasbiy ta'limni rivojlantirish instituti</div>
+    </div>
+    <div style="position: relative; max-width: 560px;">
+      <div style="font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.9;">MOQT TEST</div>
+      <h2 style="margin: 12px 0 16px; font-size: 40px; line-height: 48px; font-weight: 800; letter-spacing: -0.02em;">Chiqish testi platformasi</h2>
+      <p style="margin: 0; font-size: 15px; line-height: 23px; opacity: 0.92;">Malaka oshirish kursi yakunidagi chiqish testi. Har bir tinglovchiga alohida variant beriladi, vaqt server bo'yicha hisoblanadi.</p>
+    </div>
+    <div style="position: relative; font-size: 12px; line-height: 16px; font-weight: 500; opacity: 0.85;">© 2026 Kasbiy ta'limni rivojlantirish instituti</div>
+  </section>
+  <section style="flex: 45 1 420px; display: flex; align-items: center; justify-content: center; padding: 72px 24px; box-sizing: border-box;">
+    <form style="width: 100%; max-width: 404px; background: #ffffff; border: 1px solid #e2eaf2; border-radius: 16px; box-shadow: 0 12px 32px rgba(15,74,124,0.10); padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <h1 style="margin: 0; font-size: 26px; line-height: 34px; font-weight: 700; letter-spacing: -0.01em;">Tizimga kirish</h1>
+        <p style="margin: 0; font-size: 15px; line-height: 23px; color: #4a5b6b;">Login va parolni kiriting. Tinglovchilar ularni MOM test mas'ulidan oladi.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 18px; font-weight: 600; color: #4a5b6b;">Login
+          <input type="text" placeholder="Masalan: AKT01-017" style="height: 48px; padding: 0 12px; border: 1px solid #7b93a8; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 500; color: #10202e; box-shadow: 0 1px 2px rgba(16,32,46,0.06);">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 18px; font-weight: 600; color: #4a5b6b;">Parol
+          <input type="password" placeholder="Parolni kiriting" style="height: 48px; padding: 0 12px; border: 1px solid #7b93a8; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 500; color: #10202e; box-shadow: 0 1px 2px rgba(16,32,46,0.06);">
+        </label>
+      </div>
+      <div role="alert" style="display: flex; gap: 8px; align-items: flex-start; padding: 12px; border-radius: 12px; background: #fbebeb; color: #c0342c; font-size: 13px; line-height: 19px; font-weight: 600;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto;"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4M12 17h.01"></path></svg>
+        <span>Login yoki parol noto'g'ri. Qayta kiriting yoki MOM test mas'uliga murojaat qiling.</span>
+      </div>
+      <button type="submit" style="height: 48px; border: 0; border-radius: 12px; background: #1763a0; color: #ffffff; font-family: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0.01em; box-shadow: 0 2px 6px rgba(15,74,124,0.18); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">Kirish
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"></path></svg>
+      </button>
+      <p style="margin: 0; font-size: 13px; line-height: 19px; color: #4a5b6b;">Rolingiz avtomatik aniqlanadi: admin boshqaruv paneliga, tinglovchi test sahifasiga o'tadi.</p>
+    </form>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+import { ApiError, FileResponse, notFound, Reply } from './http.js'
+import { adminRoutes } from './routes/admins.js'
+import { auditRoutes } from './routes/audit.js'
+import { authRoutes } from './routes/auth.js'
+import { bankRoutes } from './routes/bank.js'
+import { importRoutes } from './routes/import.js'
+import { createState } from './state.js'
+
+const methodNotAllowed = () => new ApiError(405, 'method_not_allowed', "Bu amalga ruxsat yo'q.")
+
+// 'PATCH /admins/:id/' -> { method, pattern, handler }
+function compileRoutes(table) {
+  return Object.entries(table).map(([key, handler]) => {
+    const [method, path] = key.split(' ')
+    const source = path
+      .replace(/[.]/g, '\\.')
+      .replace(/:(\w+)/g, '(?<$1>[^/]+)')
+    return { method, pattern: new RegExp(`^${source}$`), handler }
+  })
+}
+
+function matchRoute(routes, method, path) {
+  const onPath = routes
+    .map((route) => ({ route, match: route.pattern.exec(path) }))
+    .filter(({ match }) => match)
+  const found = onPath.find(({ route }) => route.method === method)
+
+  // Jurnal append-only: manzilidan qat'i nazar yozuvni o'zgartirib bo'lmaydi.
+  const isAudit = path.startsWith('/audit/')
+  if (isAudit && method !== 'GET') throw methodNotAllowed()
+  if (found) return found
+  throw onPath.length > 0 ? methodNotAllowed() : notFound()
+}
+
+function send(res, result) {
+  if (result instanceof FileResponse) {
+    res.statusCode = 200
+    res.setHeader('Content-Type', result.contentType)
+    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`)
+    res.end(result.buffer)
+    return
+  }
+
+  const { status, body } = result
+  res.statusCode = status
+  if (body === undefined) {
+    res.end()
+    return
+  }
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.end(JSON.stringify(body))
+}
+
+export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
+  const state = createState({ now })
+  const routes = compileRoutes({
+    ...authRoutes(state),
+    ...adminRoutes(state),
+    ...auditRoutes(state),
+    ...bankRoutes(state),
+    ...importRoutes(state),
+  })
+
+  const handler = async (req, res) => {
+    const url = new URL(req.url, 'http://mock')
+
+    if (latencyMs) await new Promise((resolve) => setTimeout(resolve, latencyMs))
+
+    try {
+      const { route, match } = matchRoute(routes, req.method, url.pathname)
+      req.params = match.groups ?? {}
+      req.query = url.searchParams
+
+      const result = await route.handler(req)
+      send(res, result instanceof FileResponse || result instanceof Reply ? result : new Reply(200, result))
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error
+      send(res, new Reply(error.status, error.body))
+    }
+  }
+
+  return Object.assign(handler, { auditLog: state.auditLog })
+}
