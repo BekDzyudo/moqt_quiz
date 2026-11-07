@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react'
+import { forwardRef } from 'react'
 
 const VARIANTS = {
   primary:
@@ -19,7 +20,8 @@ const SIZES = {
 
 // `icon` majburiy: loyihada matnli-only tugma yo'q. Ikonka matndan keyin turadi.
 // Matnsiz (faqat ikonka) tugmaga `aria-label` beriladi.
-export default function Button({
+const Button = forwardRef(function Button(
+  {
   icon: Icon,
   variant = 'primary',
   size = 'md',
@@ -30,7 +32,9 @@ export default function Button({
   className = '',
   children,
   ...props
-}) {
+  },
+  ref,
+) {
   const shownIcon = loading ? (
     <Loader2 size={18} strokeWidth={1.9} aria-hidden="true" className="animate-spin" />
   ) : (
@@ -39,6 +43,7 @@ export default function Button({
 
   return (
     <button
+      ref={ref}
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
@@ -50,4 +55,6 @@ export default function Button({
       {!iconFirst && shownIcon}
     </button>
   )
-}
+})
+
+export default Button

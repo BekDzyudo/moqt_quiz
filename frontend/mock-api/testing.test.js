@@ -890,7 +890,7 @@ describe("guruh sahifasi bilan bog'lanish", () => {
     assert.equal(members[0].live.status, 'finished')
     assert.equal(members[0].live.progress, "12 / 12 · O'tdi")
     assert.equal(members[1].live.status, 'in_progress')
-    assert.equal(members[1].live.progress, '0 / 12')
+    assert.match(members[1].live.progress, /^0 \/ 12 · \d\d:\d\d qoldi$/)
 
     const { data: detail } = await call('GET', `/groups/${group.id}/`, { token: admin })
     assert.equal(detail.finished_count, 1)

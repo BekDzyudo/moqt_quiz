@@ -17,6 +17,27 @@ const dayMonthYear = new Intl.DateTimeFormat('en-GB', {
 // Foydalanuvchi soati boshqa zonada bo'lsa ham kun Toshkent bo'yicha olinadi.
 export const todayInTashkent = () => dateKey.format(new Date())
 
+const UZ_MONTHS = [
+  'yanvar',
+  'fevral',
+  'mart',
+  'aprel',
+  'may',
+  'iyun',
+  'iyul',
+  'avgust',
+  'sentabr',
+  'oktabr',
+  'noyabr',
+  'dekabr',
+]
+
+// 2026-11-06 -> "6-noyabr 2026"
+export function formatUzDate(date) {
+  const [year, month, day] = dateKey.format(date).split('-').map(Number)
+  return `${day}-${UZ_MONTHS[month - 1]} ${year}`
+}
+
 export const formatTime = (iso) => clock.format(new Date(iso))
 
 export const formatDateTime = (iso) =>

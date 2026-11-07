@@ -31,6 +31,7 @@ export const ACTION_LABELS = {
   test_closed: 'Test yopildi',
   test_open_failed: 'Test ochilmadi',
   retake_granted: 'Qayta topshirishga ruxsat',
+  results_exported: 'Natijalar yuklab olindi',
 }
 
 const tashkentDateFormat = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tashkent' })

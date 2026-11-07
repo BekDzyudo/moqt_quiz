@@ -10,6 +10,7 @@ export default function ConfirmModal({
   title,
   confirmLabel = "O'chirish",
   icon = Trash2,
+  variant = 'danger',
   onConfirm,
   onClose,
   children,
@@ -38,7 +39,7 @@ export default function ConfirmModal({
           <Button variant="secondary" icon={X} onClick={onClose}>
             Bekor qilish
           </Button>
-          <Button variant="danger" icon={icon} loading={working} onClick={handleConfirm}>
+          <Button variant={variant} icon={icon} loading={working} onClick={handleConfirm}>
             {confirmLabel}
           </Button>
         </div>

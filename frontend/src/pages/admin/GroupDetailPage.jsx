@@ -1,21 +1,46 @@
-import { CircleAlert, FileUp, Loader2, Pencil, UserPlus, Users } from 'lucide-react'
+import {
+  CircleAlert,
+  FileUp,
+  KeyRound,
+  Loader2,
+  Lock,
+  LockOpen,
+  Pencil,
+  RotateCcw,
+  UserPlus,
+  Users,
+} from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuestionSets } from '../../api/bank.js'
-import { useGroup, useGroupMembers } from '../../api/groups.js'
+import {
+  generateCredentials,
+  openGroupTest,
+  useGroup,
+  useGroupMembers,
+} from '../../api/groups.js'
 import AddMemberModal from '../../components/admin/groups/AddMemberModal.jsx'
+import CloseTestModal from '../../components/admin/groups/CloseTestModal.jsx'
 import CredentialsCard from '../../components/admin/groups/CredentialsCard.jsx'
+import CredentialsResultModal from '../../components/admin/groups/CredentialsResultModal.jsx'
 import ExitPasswordCard from '../../components/admin/groups/ExitPasswordCard.jsx'
 import GroupModal from '../../components/admin/groups/GroupModal.jsx'
 import MemberImportModal from '../../components/admin/groups/MemberImportModal.jsx'
+import RetakeModal from '../../components/admin/groups/RetakeModal.jsx'
+import ActionMenu from '../../components/ui/ActionMenu.jsx'
+import Alert from '../../components/ui/Alert.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Card from '../../components/ui/Card.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import DataTable from '../../components/ui/DataTable.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
 import PageHeader from '../../components/ui/PageHeader.jsx'
 import StatusBadge from '../../components/ui/StatusBadge.jsx'
 import { GROUP_STATUS } from '../../lib/groupStatus.js'
 import { formatTime } from '../../lib/time.js'
+import { usePolling } from '../../lib/usePolling.js'
+
+const POLL_MS = 5000
 
 const LIVE_STATUS = {
   not_started: { tone: 'neutral', label: 'Kirmagan' },
@@ -54,7 +79,12 @@ const MEMBER_COLUMNS = [
   {
     key: 'exits',
     header: 'Ekrandan chiqish',
-    render: ({ live }) => <span className="text-ink-600">{live.fullscreen_exits}</span>,
+    render: ({ live }) =>
+      live.suspicious ? (
+        <StatusBadge tone="error">{live.fullscreen_exits} marta · shubhali</StatusBadge>
+      ) : (
+        <span className="text-ink-600">{live.fullscreen_exits}</span>
+      ),
   },
 ]
 
@@ -80,11 +110,66 @@ export default function GroupDetailPage({ page }) {
   const { data: members, error: membersError, reload: reloadMembers } = useGroupMembers(id)
   const { data: sets } = useQuestionSets()
   const [dialog, setDialog] = useState(null)
+  const [selectedMember, setSelectedMember] = useState(null)
+  const [credentials, setCredentials] = useState(null)
 
   const reloadAll = () => {
     reload()
     reloadMembers()
   }
+
+  usePolling(reloadAll, POLL_MS)
+
+  const closeDialog = () => {
+    setDialog(null)
+    setSelectedMember(null)
+  }
+
+  const memberDialog = (name, member) => {
+    setSelectedMember(member)
+    setDialog(name)
+  }
+
+  const handleOpenTest = async () => {
+    await openGroupTest(id)
+    closeDialog()
+    reloadAll()
+  }
+
+  const handleRegenerateMember = async () => {
+    const result = await generateCredentials(id, [selectedMember.id])
+    closeDialog()
+    setCredentials(result)
+    reloadAll()
+  }
+
+  const columns = [
+    ...MEMBER_COLUMNS,
+    {
+      key: 'actions',
+      header: <span className="sr-only">Amallar</span>,
+      align: 'right',
+      render: (member) => (
+        <ActionMenu
+          label={`${member.full_name} — amallar`}
+          items={[
+            {
+              label: 'Qayta topshirishga ruxsat',
+              icon: RotateCcw,
+              disabled: !member.live.can_retake,
+              hint: 'Tinglovchi testni yakunlagach ruxsat berish mumkin.',
+              onSelect: () => memberDialog('retake', member),
+            },
+            {
+              label: 'Login-parolni qayta yaratish',
+              icon: KeyRound,
+              onSelect: () => memberDialog('credential', member),
+            },
+          ]}
+        />
+      ),
+    },
+  ]
 
   if (!group) {
     return (
@@ -107,13 +192,18 @@ export default function GroupDetailPage({ page }) {
   const counts = (status) =>
     (members ?? []).filter((member) => member.live.status === status).length
 
+  const isOpen = group.test_status === 'open'
+
   return (
     <>
       <PageHeader
         icon={page.icon}
         eyebrow={
           <>
-            <Link to="/admin/guruhlar">Guruhlar</Link> / {group.organization}
+            <Link to="/admin/guruhlar" className="underline">
+              Guruhlar
+            </Link>{' '}
+            / {group.organization}
           </>
         }
         title={
@@ -130,9 +220,18 @@ export default function GroupDetailPage({ page }) {
             <Button variant="secondary" size="sm" icon={UserPlus} onClick={() => setDialog('member')}>
               Tinglovchi qo'shish
             </Button>
-            <Button size="sm" icon={FileUp} onClick={() => setDialog('import')}>
+            <Button variant="secondary" size="sm" icon={FileUp} onClick={() => setDialog('import')}>
               Excel import
             </Button>
+            {isOpen ? (
+              <Button variant="dark" size="sm" icon={Lock} onClick={() => setDialog('close')}>
+                Testni yopish
+              </Button>
+            ) : (
+              <Button size="sm" icon={LockOpen} onClick={() => setDialog('open')}>
+                {group.test_status === 'finished' ? 'Qayta ochish' : 'Testni ochish'}
+              </Button>
+            )}
           </>
         }
       />
@@ -168,7 +267,7 @@ export default function GroupDetailPage({ page }) {
         </div>
 
         <DataTable
-          columns={MEMBER_COLUMNS}
+          columns={columns}
           rows={members ?? []}
           loading={!members && !membersError}
           error={membersError}
@@ -181,6 +280,75 @@ export default function GroupDetailPage({ page }) {
           }}
         />
       </Card>
+
+      {dialog === 'open' && (
+        <ConfirmModal
+          title="Testni ochasizmi?"
+          confirmLabel="Testni ochish"
+          icon={LockOpen}
+          variant="primary"
+          onConfirm={handleOpenTest}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            Guruh <strong>{group.name}</strong> tinglovchilari testni boshlay oladi.
+          </p>
+          {!group.exit_password_set && (
+            <Alert tone="info">
+              Chiqish paroli o'rnatilmagan: test paytida tinglovchini to'liq ekrandan chiqarib
+              bo'lmaydi. Avval parolni o'rnatish tavsiya etiladi.
+            </Alert>
+          )}
+        </ConfirmModal>
+      )}
+
+      {dialog === 'close' && (
+        <CloseTestModal
+          groupId={group.id}
+          groupName={group.name}
+          working={counts('in_progress')}
+          onClose={closeDialog}
+          onClosed={() => {
+            closeDialog()
+            reloadAll()
+          }}
+        />
+      )}
+
+      {dialog === 'retake' && (
+        <RetakeModal
+          groupId={group.id}
+          member={selectedMember}
+          onClose={closeDialog}
+          onGranted={() => {
+            closeDialog()
+            reloadAll()
+          }}
+        />
+      )}
+
+      {dialog === 'credential' && (
+        <ConfirmModal
+          title="Login-parolni qayta yaratasizmi?"
+          confirmLabel="Qayta yaratish"
+          icon={KeyRound}
+          onConfirm={handleRegenerateMember}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            <strong>{selectedMember.full_name}</strong> uchun yangi parol yaratiladi. Eski parol
+            ishlamay qoladi. Tinglovchi testda bo'lsa, qayta kirishi kerak bo'ladi, vaqt to'xtamaydi.
+          </p>
+        </ConfirmModal>
+      )}
+
+      {credentials && (
+        <CredentialsResultModal
+          group={group}
+          result={credentials}
+          onClose={() => setCredentials(null)}
+        />
+      )}
 
       {dialog === 'edit' && (
         <GroupModal

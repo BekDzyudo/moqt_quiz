@@ -160,7 +160,7 @@ export function createEngine(state) {
 
   // Tekshiruv va yozuv orasida `await` yo'q: parallel so'rovlar bir-birini ko'radi
   // (Django'da buni select_for_update bajaradi).
-  const start = (user) => {
+  const start = (user, { startedAt = now() } = {}) => {
     const group = groupById(user.group)
     const previous = attemptsOf(user).map(touch)
 
@@ -185,7 +185,6 @@ export function createEngine(state) {
     const questions = buildVariant(activePool(set), set.question_count, seen)
     for (const slot of questions) questionById(slot.question).in_use = true
 
-    const startedAt = now()
     const attempt = {
       id: nextAttemptId,
       user: user.id,
@@ -289,6 +288,7 @@ export function createEngine(state) {
     attempts,
     start,
     touch,
+    remainingMs: (attempt) => Math.max(0, attempt.timing.deadline_at - now()),
     finalize,
     tick,
     latestAttempt,

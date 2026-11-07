@@ -18,6 +18,12 @@ const text = (value) => (typeof value === 'string' ? value.trim() : '')
 
 const pad = (sequence) => String(sequence).padStart(3, '0')
 
+function formatRemaining(ms) {
+  const seconds = Math.ceil(ms / 1000)
+  const minutes = String(Math.floor(seconds / 60)).padStart(2, '0')
+  return `${minutes}:${String(seconds % 60).padStart(2, '0')}`
+}
+
 export function groupRoutes(state) {
   const { audit, requireRole, bank, users, engine } = state
   const groups = state.groups
@@ -72,7 +78,15 @@ export function groupRoutes(state) {
 
   const presentLive = (user) => {
     const attempt = engine.latestAttempt(user)
-    if (!attempt) return { status: 'not_started', progress: null, fullscreen_exits: 0, suspicious: false }
+    if (!attempt) {
+      return {
+        status: 'not_started',
+        progress: null,
+        fullscreen_exits: 0,
+        suspicious: false,
+        can_retake: false,
+      }
+    }
 
     engine.touch(attempt)
     const total = attempt.questions.length
@@ -82,10 +96,11 @@ export function groupRoutes(state) {
     return {
       status: active ? 'in_progress' : 'finished',
       progress: active
-        ? `${answered} / ${total}`
+        ? `${answered} / ${total} · ${formatRemaining(engine.remainingMs(attempt))} qoldi`
         : `${attempt.correct_count} / ${total} · ${attempt.passed ? "O'tdi" : "O'tmadi"}`,
       fullscreen_exits: attempt.fullscreen_exits,
       suspicious: attempt.suspicious,
+      can_retake: !active && !user.retake,
     }
   }
 

@@ -6,7 +6,9 @@ import { authRoutes } from './routes/auth.js'
 import { bankRoutes } from './routes/bank.js'
 import { groupRoutes } from './routes/groups.js'
 import { importRoutes } from './routes/import.js'
+import { resultRoutes } from './routes/results.js'
 import { createState } from './state.js'
+import { seedAttempts } from './testing/seed-attempts.js'
 
 const methodNotAllowed = () => new ApiError(405, 'method_not_allowed', "Bu amalga ruxsat yo'q.")
 
@@ -53,8 +55,10 @@ function send(res, result) {
   res.end(JSON.stringify(body))
 }
 
-export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
+export function createMockApi({ now = Date.now, latencyMs = 0, seedDemo = false } = {}) {
   const state = createState({ now })
+  if (seedDemo) seedAttempts(state)
+
   const routes = compileRoutes({
     ...authRoutes(state),
     ...adminRoutes(state),
@@ -63,6 +67,7 @@ export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
     ...importRoutes(state),
     ...groupRoutes(state),
     ...attemptRoutes(state),
+    ...resultRoutes(state),
   })
 
   const handler = async (req, res) => {

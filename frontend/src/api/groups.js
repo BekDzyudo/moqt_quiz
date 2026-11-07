@@ -40,6 +40,14 @@ export const commitMembers = (id, token) =>
 export const generateCredentials = (id, userIds) =>
   api.post(`/groups/${id}/credentials/`, userIds ? { user_ids: userIds } : {}).then(data)
 
+export const openGroupTest = (id) => api.post(`/groups/${id}/open/`).then(data)
+
+export const closeGroupTest = (id, mode) =>
+  api.post(`/groups/${id}/close/`, { mode }).then(data)
+
+export const grantRetake = (groupId, userId, reason) =>
+  api.post(`/groups/${groupId}/members/${userId}/retake/`, { reason }).then(data)
+
 export const setExitPassword = (id, password) =>
   api.post(`/groups/${id}/exit-password/`, password ? { password } : {}).then(data)
 

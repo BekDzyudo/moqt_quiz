@@ -5,15 +5,19 @@ import { ADMIN_PAGES, SUPERADMIN_PAGES } from '../../components/admin/navigation
 import { RequireRole } from '../../routes/guards.jsx'
 import AdminsPage from './AdminsPage.jsx'
 import AuditPage from './AuditPage.jsx'
+import DashboardPage from './DashboardPage.jsx'
 import GroupDetailPage from './GroupDetailPage.jsx'
 import GroupsPage from './GroupsPage.jsx'
 import PlaceholderPage from './PlaceholderPage.jsx'
 import QuestionSetsPage from './QuestionSetsPage.jsx'
 import QuestionsPage from './QuestionsPage.jsx'
+import ResultsPage from './ResultsPage.jsx'
 
 const UiKitPage = import.meta.env.DEV ? lazy(() => import('./UiKitPage.jsx')) : null
 
 const SCREENS = {
+  '/admin': DashboardPage,
+  '/admin/natijalar': ResultsPage,
   '/admin/savollar': QuestionsPage,
   '/admin/toplamlar': QuestionSetsPage,
   '/admin/guruhlar': GroupsPage,

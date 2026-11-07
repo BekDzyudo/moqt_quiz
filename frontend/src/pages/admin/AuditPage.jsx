@@ -33,6 +33,7 @@ const ACTION_TONES = {
   test_closed: 'info',
   test_open_failed: 'error',
   retake_granted: 'warning',
+  results_exported: 'neutral',
   login: 'neutral',
   logout: 'neutral',
 }
