@@ -81,7 +81,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="grid min-h-screen min-[1080px]:grid-cols-[55fr_45fr]">
+    <main className="grid min-h-screen min-[1080px]:grid-cols-[55fr_45fr]">
       <BrandPanel />
       <section className="flex items-center justify-center px-4 py-8 min-[1080px]:px-6 min-[1080px]:py-[72px]">
         <form
@@ -140,6 +140,6 @@ export default function LoginPage() {
           </p>
         </form>
       </section>
-    </div>
+    </main>
   )
 }

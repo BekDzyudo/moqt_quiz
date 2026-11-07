@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { connect } from 'node:net'
 import { beforeEach, describe, it } from 'node:test'
 import { call, context, login, resetApi, startTestServer } from './test-helpers.js'
 
@@ -95,6 +96,25 @@ describe('tokenlar', () => {
     const { access, refresh } = (await login('admin', 'Admin12345')).data
     assert.equal((await call('POST', '/auth/logout/', { token: access, body: { refresh } })).status, 200)
     assert.equal((await call('POST', '/auth/refresh/', { body: { refresh } })).status, 401)
+  })
+})
+
+describe('server barqarorligi', () => {
+  it("yarim yuborilgan so'rov uzilsa server yiqilmaydi", async () => {
+    const { hostname, port } = new URL(context.baseUrl)
+
+    await new Promise((resolve) => {
+      const socket = connect(Number(port), hostname, () => {
+        socket.write(
+          'POST /auth/login/ HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: 1000\r\n\r\n{"user',
+          () => setTimeout(() => socket.destroy(), 20),
+        )
+      })
+      socket.once('close', resolve)
+    })
+    await new Promise((resolve) => setTimeout(resolve, 30))
+
+    assert.equal((await login('admin', 'Admin12345')).status, 200)
   })
 })
 

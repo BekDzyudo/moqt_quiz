@@ -32,6 +32,8 @@ ishlaydi, alohida ishga tushirilmaydi.
 | Bloklangan admin | `nam_mom` | `Namangan2026` | kira olmaydi |
 | Tinglovchi | `AKT01-017` | `Ab3dE9` | `/test` |
 
+Birinchi guruhning (`2026-11-AKT-01`) chiqish paroli: `Chiqish1`.
+
 Mock holati xotirada saqlanadi: dev server qayta ishga tushsa yoki
 `mock-api/` dagi fayl o'zgarsa, boshlang'ich holatga qaytadi.
 

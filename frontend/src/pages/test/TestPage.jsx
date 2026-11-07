@@ -1,53 +1,78 @@
-import { ClipboardCheck, LogOut } from 'lucide-react'
+import { CircleAlert, Loader2, Monitor, RefreshCw } from 'lucide-react'
 import { useEffect } from 'react'
-import { api } from '../../api/client.js'
-import BrandMark from '../../components/ui/BrandMark.jsx'
+import { fetchMyTest } from '../../api/attempt.js'
+import { useRequest } from '../../api/useRequest.js'
+import ActiveTest from '../../components/test/ActiveTest.jsx'
+import { useIsDesktop } from '../../components/test/guards.js'
+import PageBar from '../../components/test/PageBar.jsx'
+import ResultScreen from '../../components/test/ResultScreen.jsx'
+import WaitingScreen from '../../components/test/WaitingScreen.jsx'
 import Button from '../../components/ui/Button.jsx'
-import Card from '../../components/ui/Card.jsx'
 import EmptyState from '../../components/ui/EmptyState.jsx'
-import { ROLES } from '../../lib/roles.js'
-import { useAuth } from '../../store/auth.js'
 
-const POLL_MS = 10_000
+const WAITING_POLL_MS = 10 * 1000
 
-// 5-bosqichda kutish, test va natija holatlari shu sahifaga qo'shiladi.
+function Centered({ children }) {
+  return <div className="flex min-h-screen items-center justify-center p-6">{children}</div>
+}
+
 export default function TestPage() {
-  const user = useAuth((state) => state.user)
-  const logout = useAuth((state) => state.logout)
+  const { data: test, error, reload } = useRequest(fetchMyTest)
+  const isDesktop = useIsDesktop()
 
-  // Boshqa qurilmadan kirilganini shu so'rov aniqlaydi (5-bosqichda GET /me/test/ almashtiradi).
+  const attempt = test?.attempt
+  const isActive = attempt?.status === 'active'
+  const isFinished = attempt && !isActive && !test.retake_allowed
+
+  // Kutishda test ochilganini shu so'rov aniqlaydi. Boshqa qurilmadan kirilgani ham shu yerda bilinadi.
   useEffect(() => {
-    const timer = setInterval(() => {
-      api.get('/auth/me/').catch(() => {})
-    }, POLL_MS)
+    if (!test || isActive || isFinished) return undefined
+    const timer = setInterval(reload, WAITING_POLL_MS)
     return () => clearInterval(timer)
-  }, [])
+  }, [test, isActive, isFinished, reload])
 
-  return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex min-h-[68px] flex-wrap items-center justify-between gap-4 border-b border-border-200 bg-surface-card px-4 py-3 sm:px-8">
-        <BrandMark />
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="leading-5 font-semibold">{user.full_name}</div>
-            <div className="text-[13px] leading-[18px] text-ink-600">
-              {ROLES[user.role]} · <span className="font-mono">{user.username}</span>
-            </div>
-          </div>
-          <Button variant="secondary" size="sm" icon={LogOut} onClick={logout}>
-            Chiqish
-          </Button>
-        </div>
-      </header>
-      <main className="flex flex-1 justify-center px-4 py-12 sm:px-6">
-        <Card className="h-fit w-full max-w-[880px]">
+  if (!test) {
+    return (
+      <Centered>
+        {error ? (
           <EmptyState
-            icon={ClipboardCheck}
-            title="Test sahifasi tayyorlanmoqda"
-            description="Bu sahifa 5-bosqichda to'ldiriladi."
+            icon={CircleAlert}
+            tone="error"
+            title="Test ma'lumotini olib bo'lmadi"
+            description={error}
+            action={
+              <Button variant="secondary" size="sm" icon={RefreshCw} onClick={reload}>
+                Qayta urinish
+              </Button>
+            }
           />
-        </Card>
-      </main>
-    </div>
-  )
+        ) : (
+          <EmptyState icon={Loader2} spin title="Yuklanmoqda" />
+        )}
+      </Centered>
+    )
+  }
+
+  if (isFinished) return <ResultScreen attemptId={attempt.id} test={test} />
+
+  if (!isDesktop) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <PageBar />
+        <Centered>
+          <EmptyState
+            icon={Monitor}
+            title="Kompyuterdan kiring"
+            description="Test faqat kompyuterda topshiriladi: ekran kengligi kamida 1024 piksel bo'lishi kerak."
+          />
+        </Centered>
+      </div>
+    )
+  }
+
+  if (isActive) {
+    return <ActiveTest attemptId={attempt.id} setName={test.set.name} onEnded={reload} />
+  }
+
+  return <WaitingScreen test={test} onStarted={reload} />
 }

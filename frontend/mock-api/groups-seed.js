@@ -1,3 +1,5 @@
+import { hashPassword } from './passwords.js'
+
 const MEN = [
   ['Abdullayev', 'Jasur', 'Baxtiyorovich'],
   ['Bakirov', 'Otabek', 'Ravshanovich'],
@@ -29,6 +31,8 @@ const GROUPS = [
 ]
 
 const SEED_LISTENER_SEQUENCE = 17
+// Birinchi guruhda Ctrl+Alt+N ni darhol sinash uchun.
+export const SEED_EXIT_PASSWORD = 'Chiqish1'
 
 function personName(index) {
   const pool = index % 2 === 0 ? MEN : WOMEN
@@ -53,7 +57,7 @@ export function createGroups({ seedListener, createUser, nowIso }) {
       closed_at: status === 'finished' ? nowIso() : null,
       scheduled_open_at: null,
       scheduled_close_at: null,
-      exit_password_hash: null,
+      exit_password_hash: index === 0 ? hashPassword(SEED_EXIT_PASSWORD) : null,
     }
     groups.push(group)
 

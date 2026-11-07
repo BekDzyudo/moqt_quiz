@@ -78,8 +78,16 @@ export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
       const result = await route.handler(req)
       send(res, result instanceof FileResponse || result instanceof Reply ? result : new Reply(200, result))
     } catch (error) {
-      if (!(error instanceof ApiError)) throw error
-      send(res, new Reply(error.status, error.body))
+      if (error instanceof ApiError) {
+        send(res, new Reply(error.status, error.body))
+        return
+      }
+      // Sahifa yangilanganda brauzer yarim so'rovni uzadi: javob beradigan hech kim yo'q.
+      if (req.destroyed || error.code === 'ECONNRESET') return
+
+      // Bu yerdan xato tashqariga chiqsa, butun dev server o'ladi.
+      console.error('[mock-api]', req.method, req.url, error)
+      send(res, new Reply(500, { code: 'server_error', detail: "Serverda xatolik. Qayta urining." }))
     }
   }
 

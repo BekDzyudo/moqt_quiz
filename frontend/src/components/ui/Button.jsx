@@ -5,6 +5,7 @@ const VARIANTS = {
     'border-transparent bg-brand-700 text-white shadow-raised hover:bg-brand-900 active:bg-brand-900',
   secondary:
     'border-border-400 bg-surface-card text-ink-900 shadow-control hover:bg-surface-muted active:bg-brand-soft',
+  dark: 'border-transparent bg-brand-900 text-white hover:bg-brand-700 active:bg-brand-700',
   danger: 'border-transparent bg-error text-white shadow-raised hover:bg-[#a32a23] active:bg-[#a32a23]',
   dangerOutline: 'border-error bg-surface-card text-error hover:bg-error-soft active:bg-error-soft',
   dashed: 'border-dashed border-border-400 bg-surface-card text-ink-600 hover:bg-surface-muted',
@@ -25,6 +26,7 @@ export default function Button({
   type = 'button',
   loading = false,
   disabled = false,
+  iconFirst = false,
   className = '',
   children,
   ...props
@@ -43,8 +45,9 @@ export default function Button({
       className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border font-bold tracking-[0.01em] transition-colors duration-150 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-surface-muted disabled:text-ink-400 disabled:shadow-none ${VARIANTS[variant]} ${SIZES[size]} ${children ? '' : 'w-11 px-0'} ${className}`}
       {...props}
     >
+      {iconFirst && shownIcon}
       {children}
-      {shownIcon}
+      {!iconFirst && shownIcon}
     </button>
   )
 }

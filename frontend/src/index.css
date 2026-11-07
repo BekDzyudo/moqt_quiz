@@ -70,6 +70,21 @@
   --shadow-raised: 0 2px 6px rgba(15, 74, 124, 0.18);
 }
 
+/* Test ekrani: belgilash va chop etish o'chiriladi, kiritish maydonlari ishlayveradi. */
+body.test-active {
+  user-select: none;
+}
+
+body.test-active input {
+  user-select: text;
+}
+
+@media print {
+  body.test-active {
+    display: none;
+  }
+}
+
 @layer base {
   html,
   body,
