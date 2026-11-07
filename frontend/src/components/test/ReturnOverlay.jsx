@@ -45,7 +45,7 @@ export default function ReturnOverlay({ remaining, exits, exitLimit, error, onRe
 
         {error && <Alert tone="error">{error}</Alert>}
 
-        <Button icon={Maximize} className="h-[52px] px-7" onClick={onReturn}>
+        <Button size="xl" icon={Maximize} onClick={onReturn}>
           Testga qaytish
         </Button>
       </section>

@@ -153,7 +153,7 @@ Dizayn **KTRI dizayn tizimi** asosida (my.moqt.uz'dagi indigo/violet
 | ink-600 | `#4a5b6b` | Ikkilamchi matn, yorliqlar |
 | ink-400 | `#616f7d` | Placeholder |
 | success | `#1a6f4a` (fon `#e5f4e4`) | O'tdi, faol |
-| warning | `#8a5300` (fon `#f9eeda`) | Ogohlantirish, belgilangan |
+| warning | `#8a5300` (fon `#f9eeda`) | Ogohlantirish |
 | error | `#c0342c` (fon `#fbebeb`) | Xato, o'tmadi, shubhali |
 | seal-navy | `#283770` | Faqat rasmiy hujjat (PDF varaqa) sarlavhasi |
 
@@ -236,7 +236,7 @@ shu uslubda o'zing qo'sh.
   (bool) + `suspicious_reasons` (JSON), `is_retake`, `retake_reason`.
 - `AttemptQuestion`: `attempt`, `n` (1..N), `question` FK, `option_map`
   (JSON: `[{key, option_id}]` aralashtirilgan tartibda), `selected_option`
-  FK null, `flagged`, `answered_at`, `time_spent_ms`.
+  FK null, `answered_at`, `time_spent_ms`.
 - `AttemptEvent`: `attempt`, `type` (`fullscreen_exit|hidden|blur|return|
   reconnect|new_session|exit_key_used|exit_key_failed`), `at`, `meta` JSON.
 - `AuditLog`: `actor`, `action`, `object_type`, `object_repr`, `ip`, `at`,
@@ -269,11 +269,10 @@ ochiq parol faqat shu javobda), `POST /groups/{id}/open/`,
 Tinglovchi: `GET /me/test/` → `{group, set:{name, question_count,
 duration_minutes, pass_score}, test_status, attempt:{id, status} | null}`;
 `POST /me/test/start/` → attempt; `GET /attempts/{id}/` →
-`{status, n_total, current_n, answered:[n...], flagged:[n...], server_now,
-deadline_at}`; `GET /attempts/{id}/questions/{n}/` → `{n, text, image_url,
-options:[{key, text}], selected_key, flagged}`;
+`{status, n_total, current_n, answered:[n...], server_now, deadline_at}`; `GET /attempts/{id}/questions/{n}/` → `{n, text, image_url,
+options:[{key, text}], selected_key}`;
 `PUT /attempts/{id}/answers/{n}/` `{key, time_spent_ms}` (idempotent);
-`PUT /attempts/{id}/flags/{n}/` `{flagged}`; `POST /attempts/{id}/events/`;
+`POST /attempts/{id}/events/`;
 `POST /attempts/{id}/exit-unlock/` `{password}`;
 `POST /attempts/{id}/finish/`; `GET /attempts/{id}/result/` →
 `{correct_count, n_total, percent, passed, duration_seconds}`.

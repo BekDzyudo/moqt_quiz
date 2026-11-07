@@ -107,7 +107,7 @@ export default function AuditPage({ page }) {
         actions={
           <Button
             variant="secondary"
-            size="sm"
+            size="md"
             icon={Download}
             loading={exporting}
             onClick={handleExport}
@@ -141,6 +141,7 @@ export default function AuditPage({ page }) {
         </div>
 
         <DataTable
+          compact
           columns={columns}
           rows={data?.results ?? []}
           loading={loading && !data}

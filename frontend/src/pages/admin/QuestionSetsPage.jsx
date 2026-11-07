@@ -1,4 +1,4 @@
-import { CircleAlert, Layers, Link2, Loader2, Pencil, Plus, RefreshCw } from 'lucide-react'
+import { CircleAlert, Layers, Loader2, PenLine, Plus, RotateCw } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuestionSets } from '../../api/bank.js'
@@ -14,7 +14,7 @@ const RECOMMENDED_FACTOR = 3
 function Metric({ label, value }) {
   return (
     <div className="rounded-xl bg-surface-muted p-2.5">
-      <div className="text-xs font-semibold text-ink-600">{label}</div>
+      <div className="text-[12px] font-semibold text-ink-600">{label}</div>
       <div className="text-[17px] font-bold">{value}</div>
     </div>
   )
@@ -47,8 +47,8 @@ function SetCard({ set, onEdit }) {
         <h2 className="m-0 text-[17px] leading-6 font-semibold">{set.name}</h2>
         <Button
           variant="secondary"
-          size="sm"
-          icon={Pencil}
+          size="xs"
+          icon={PenLine}
           aria-label={`${set.name} — tahrirlash`}
           className="shrink-0"
           onClick={onEdit}
@@ -76,10 +76,10 @@ function SetCard({ set, onEdit }) {
           ))}
           <Link
             to="/admin/guruhlar"
-            className="inline-flex min-h-11 items-center gap-1 rounded-full border border-dashed border-border-400 px-3 text-[13px] font-semibold text-ink-600 no-underline hover:bg-surface-muted"
+            className="relative inline-flex h-7 items-center gap-1 rounded-full border border-dashed border-border-400 bg-surface-card px-2.5 text-[13px] font-semibold text-ink-600 no-underline after:absolute after:-inset-2 after:content-[''] hover:bg-surface-muted"
           >
             Guruh biriktirish
-            <Link2 size={14} strokeWidth={1.9} aria-hidden="true" />
+            <Plus size={14} strokeWidth={1.9} aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function QuestionSetsPage({ page }) {
         title={page.label}
         description={page.description}
         actions={
-          <Button size="sm" icon={Plus} onClick={() => setEditing(null)}>
+          <Button size="md" icon={Plus} onClick={() => setEditing(null)}>
             Yangi to'plam
           </Button>
         }
@@ -124,7 +124,7 @@ export default function QuestionSetsPage({ page }) {
             title="Yuklab bo'lmadi"
             description={error}
             action={
-              <Button variant="secondary" size="sm" icon={RefreshCw} onClick={reload}>
+              <Button variant="secondary" size="xs" icon={RotateCw} onClick={reload}>
                 Qayta urinish
               </Button>
             }

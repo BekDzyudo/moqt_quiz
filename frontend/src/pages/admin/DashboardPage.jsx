@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button.jsx'
 import Card from '../../components/ui/Card.jsx'
 import DataTable from '../../components/ui/DataTable.jsx'
 import PageHeader from '../../components/ui/PageHeader.jsx'
-import { formatTime, formatUzDate } from '../../lib/time.js'
+import { formatDateMinutes, formatUzDate } from '../../lib/time.js'
 import { usePolling } from '../../lib/usePolling.js'
 
 const POLL_MS = 5000
@@ -47,7 +47,7 @@ export default function DashboardPage({ page }) {
     {
       key: 'opened_at',
       header: 'Ochilgan',
-      render: (test) => (test.opened_at ? formatTime(test.opened_at).slice(0, 5) : '—'),
+      render: (test) => (test.opened_at ? formatDateMinutes(test.opened_at) : '—'),
     },
     {
       key: 'working',
@@ -60,7 +60,7 @@ export default function DashboardPage({ page }) {
       header: <span className="sr-only">Amallar</span>,
       align: 'right',
       render: (test) => (
-        <Button variant="secondary" size="sm" icon={Lock} onClick={() => setClosing(test)}>
+        <Button variant="secondary" size="xs" icon={Lock} onClick={() => setClosing(test)}>
           Testni yopish
         </Button>
       ),
@@ -86,7 +86,7 @@ export default function DashboardPage({ page }) {
           <StatCard label="Bugun yakunlagan" value={data?.finished_today} unit="tinglovchi" />
         </div>
         <Link
-          to="/admin/natijalar"
+          to="/admin/natijalar?group=shubhali"
           className={`${CARD} no-underline hover:border-border-400`}
         >
           <StatCard label="Shubhali urinishlar" value={data?.suspicious_count} unit="ko'rib chiqish kerak" danger />

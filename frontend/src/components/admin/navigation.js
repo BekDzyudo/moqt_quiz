@@ -1,4 +1,4 @@
-import { ChartColumn, FileText, House, Layers, List, ShieldCheck, Users } from 'lucide-react'
+import { ChartColumn, FileText, House, Layers, List, Shield, Users } from 'lucide-react'
 
 export const ADMIN_PAGES = [
   {
@@ -43,7 +43,7 @@ export const SUPERADMIN_PAGES = [
     to: '/admin/adminlar',
     label: 'Adminlar',
     description: "Adminlarni qo'shish va ularning login-parolini boshqarish faqat superadmin uchun",
-    icon: ShieldCheck,
+    icon: Shield,
     stage: 1,
   },
   {

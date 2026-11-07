@@ -85,6 +85,8 @@ export function groupRoutes(state) {
         fullscreen_exits: 0,
         suspicious: false,
         can_retake: false,
+        retake_pending: false,
+        previous: [],
       }
     }
 
@@ -101,6 +103,12 @@ export function groupRoutes(state) {
       fullscreen_exits: attempt.fullscreen_exits,
       suspicious: attempt.suspicious,
       can_retake: !active && !user.retake,
+      retake_pending: Boolean(user.retake),
+      // Avvalgi urinishlar natijasi: qayta topshirishdan keyin ham ko'rinib turadi.
+      previous: engine.attemptsOf(user).slice(0, -1).map((item, index) => {
+        const result = item.passed ? "O'tdi" : "O'tmadi"
+        return `${index + 1}-urinish: ${item.correct_count} / ${item.questions.length} · ${result}`
+      }),
     }
   }
 

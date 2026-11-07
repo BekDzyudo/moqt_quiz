@@ -1,10 +1,10 @@
 import Dialog from './Dialog.jsx'
 
-export default function Modal({ wide = false, ...props }) {
+export default function Modal({ width = 'max-w-[480px]', ...props }) {
   return (
     <Dialog
       {...props}
-      className={`m-auto w-[calc(100%-32px)] rounded-2xl ${wide ? 'max-w-[760px]' : 'max-w-[520px]'}`}
+      className={`m-auto w-[calc(100%-32px)] rounded-2xl ${width}`}
     />
   )
 }

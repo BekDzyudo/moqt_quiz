@@ -1,4 +1,4 @@
-import { KeyRound, RefreshCw } from 'lucide-react'
+import { Key, RotateCw } from 'lucide-react'
 import { useState } from 'react'
 import { errorMessage } from '../../../api/client.js'
 import { generateCredentials } from '../../../api/groups.js'
@@ -42,19 +42,19 @@ export default function CredentialsCard({ group, members, onGenerated }) {
   }
 
   return (
-    <Card className="flex flex-col gap-2 p-5">
+    <Card padding="p-5" className="flex flex-col gap-2">
       <div className="text-[13px] font-semibold text-ink-600">Login-parollar</div>
       <div className="text-[17px] font-bold">
         {created} / {total} yaratilgan
       </div>
       <div className="flex flex-wrap gap-2">
         {missing.length > 0 && (
-          <Button size="sm" icon={KeyRound} loading={working} onClick={handleGenerateMissing}>
+          <Button size="xs" icon={Key} loading={working} onClick={handleGenerateMissing}>
             {created > 0 ? `Yangi ${missing.length} tasiga yaratish` : 'Login-parol yaratish'}
           </Button>
         )}
         {created > 0 && (
-          <Button variant="secondary" size="sm" icon={RefreshCw} onClick={() => setConfirming(true)}>
+          <Button variant="secondary" size="xs" icon={RotateCw} onClick={() => setConfirming(true)}>
             Qayta generatsiya
           </Button>
         )}
@@ -65,7 +65,7 @@ export default function CredentialsCard({ group, members, onGenerated }) {
         <ConfirmModal
           title="Qayta generatsiya qilasizmi?"
           confirmLabel="Qayta generatsiya"
-          icon={RefreshCw}
+          icon={RotateCw}
           onConfirm={handleRegenerate}
           onClose={() => setConfirming(false)}
         >

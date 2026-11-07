@@ -11,9 +11,6 @@ export const fetchQuestion = (id, n) => api.get(`/attempts/${id}/questions/${n}/
 export const saveAnswer = (id, n, key, timeSpentMs) =>
   api.put(`/attempts/${id}/answers/${n}/`, { key, time_spent_ms: timeSpentMs }).then(data)
 
-export const saveFlag = (id, n, flagged) =>
-  api.put(`/attempts/${id}/flags/${n}/`, { flagged }).then(data)
-
 export const sendEvent = (id, type, meta) =>
   api.post(`/attempts/${id}/events/`, { type, meta }).then(data)
 

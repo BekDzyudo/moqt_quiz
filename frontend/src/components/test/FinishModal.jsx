@@ -1,4 +1,4 @@
-import { ChevronLeft, Check } from 'lucide-react'
+import { Check, ChevronLeft, Flag } from 'lucide-react'
 import { useState } from 'react'
 import { errorMessage } from '../../api/client.js'
 import { formatRemaining } from '../../lib/serverClock.js'
@@ -22,7 +22,6 @@ function Stat({ label, value, className }) {
 export default function FinishModal({ remaining, onClose }) {
   const total = useAttemptStore((state) => state.total)
   const answered = useAttemptStore((state) => state.answered)
-  const flagged = useAttemptStore((state) => state.flagged)
   const finish = useAttemptStore((state) => state.finish)
 
   const [finishing, setFinishing] = useState(false)
@@ -44,6 +43,8 @@ export default function FinishModal({ remaining, onClose }) {
       open
       onClose={onClose}
       title="Testni yakunlaysizmi?"
+      icon={Flag}
+      hideClose
       footer={
         <div className="ml-auto flex flex-wrap gap-3">
           <Button variant="secondary" icon={ChevronLeft} onClick={onClose}>
@@ -55,11 +56,10 @@ export default function FinishModal({ remaining, onClose }) {
         </div>
       }
     >
-      <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-3 gap-3">
+      <div className="flex flex-col gap-5">
+        <div className="grid grid-cols-2 gap-3">
           <Stat label="Javob berilgan" value={answered.length} className="bg-surface-muted text-ink-600" />
           <Stat label="Javobsiz" value={total - answered.length} className="bg-error-soft text-error" />
-          <Stat label="Belgilangan" value={flagged.length} className="bg-warning-soft text-warning" />
         </div>
         <p className="m-0 text-ink-600">
           Yakunlagandan keyin javoblarni o'zgartirib bo'lmaydi. Qolgan vaqt:{' '}

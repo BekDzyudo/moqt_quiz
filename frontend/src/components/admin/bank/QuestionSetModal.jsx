@@ -1,4 +1,4 @@
-import { Check, Trash2, X } from 'lucide-react'
+import { Check, Trash, X } from 'lucide-react'
 import { useState } from 'react'
 import { createQuestionSet, deleteQuestionSet, updateQuestionSet } from '../../../api/bank.js'
 import { useFormErrors } from '../../../lib/useFormErrors.js'
@@ -62,7 +62,7 @@ export default function QuestionSetModal({ set, onClose, onSaved }) {
       footer={
         <>
           {set ? (
-            <Button variant="dangerOutline" icon={Trash2} onClick={() => setConfirming(true)}>
+            <Button variant="dangerOutline" icon={Trash} onClick={() => setConfirming(true)}>
               O'chirish
             </Button>
           ) : (

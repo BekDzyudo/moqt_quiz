@@ -1,9 +1,14 @@
-import { ChartColumn, CircleAlert, Download, FileText, Loader2, TriangleAlert } from 'lucide-react'
+import { ChartColumn, CircleAlert, Download, Loader2, TriangleAlert } from 'lucide-react'
 import { lazy, Suspense, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { errorMessage } from '../../api/client.js'
 import { useGroups } from '../../api/groups.js'
-import { downloadProtocol, downloadResultsExcel, useResults } from '../../api/results.js'
+import {
+  downloadProtocol,
+  downloadResultsExcel,
+  useResults,
+  useSuspiciousAttempts,
+} from '../../api/results.js'
 import Alert from '../../components/ui/Alert.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Card from '../../components/ui/Card.jsx'
@@ -17,6 +22,9 @@ import StatusBadge from '../../components/ui/StatusBadge.jsx'
 const DistributionChart = lazy(() => import('../../components/admin/results/DistributionChart.jsx'))
 
 const NO_FILTERS = {}
+
+// Guruh tanlagichidagi "barcha guruhlar bo'yicha shubhalilar" ko'rinishi.
+const ALL_SUSPICIOUS = 'shubhali'
 
 const statusBadge = (row) => {
   if (row.status === 'not_started') return <StatusBadge tone="neutral">Topshirmagan</StatusBadge>
@@ -33,16 +41,21 @@ const COLUMNS = [
     key: 'full_name',
     header: 'F.I.Sh.',
     render: (row) => (
-      <span className="flex flex-wrap items-center gap-2 font-semibold">
-        {row.full_name}
-        {row.suspicious && <StatusBadge tone="error">Shubhali</StatusBadge>}
-      </span>
+      <div className="flex flex-col gap-0.5">
+        <span className="font-semibold">{row.full_name}</span>
+        {row.label && (
+          <span className="text-[13px] text-ink-600">
+            {row.label}
+            {row.retake_reason && ` · sabab: ${row.retake_reason}`}
+          </span>
+        )}
+      </div>
     ),
   },
   {
     key: 'pinfl',
     header: 'PINFL',
-    render: (row) => <span className="font-mono text-[13px] text-ink-600">{row.pinfl}</span>,
+    render: (row) => <span className="text-[13px] text-ink-600">{row.pinfl}</span>,
   },
   {
     key: 'correct',
@@ -62,9 +75,73 @@ const COLUMNS = [
   { key: 'result', header: 'Natija', render: statusBadge },
 ]
 
+// Qayta topshirgan tinglovchining har bir urinishi alohida qator.
+const expandAttempts = (row) =>
+  row.attempts.length > 1
+    ? row.attempts.map((attempt, index) => ({ ...row, ...attempt, rowKey: `${row.id}-${index}` }))
+    : [{ ...row, rowKey: String(row.id) }]
+
+function AllSuspicious({ onOpenGroup }) {
+  const { data: items, loading, error, reload } = useSuspiciousAttempts()
+
+  const columns = [
+    {
+      key: 'full_name',
+      header: 'F.I.Sh.',
+      render: (item) => <span className="font-semibold">{item.full_name}</span>,
+    },
+    {
+      key: 'group',
+      header: 'Guruh',
+      render: (item) => (
+        <button
+          type="button"
+          onClick={() => onOpenGroup(item.group.id)}
+          className="cursor-pointer font-semibold text-brand-500 underline hover:text-brand-900"
+        >
+          {item.group.name}
+        </button>
+      ),
+    },
+    { key: 'score', header: "To'g'ri" },
+    {
+      key: 'reasons',
+      header: 'Sabab',
+      render: (item) => (
+        <div className="flex flex-col gap-0.5 text-[13px] leading-[19px] font-semibold text-error">
+          {item.reasons.map((reason) => (
+            <span key={reason}>{reason}</span>
+          ))}
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <Card className="flex flex-col gap-3">
+      <h2 className="m-0 flex items-center gap-2 text-[17px] leading-6 font-semibold text-error">
+        <TriangleAlert size={18} strokeWidth={1.9} aria-hidden="true" />
+        Shubhali urinishlar · {items?.length ?? 0}
+      </h2>
+      <p className="m-0 text-[13px] leading-[19px] text-ink-600">
+        Avtomatik jazo emas — tekshirish uchun ro'yxat.
+      </p>
+      <DataTable
+        compact
+        columns={columns}
+        rows={items ?? []}
+        loading={loading && !items}
+        error={error}
+        onRetry={reload}
+        empty={{ title: 'Shubhali urinish topilmadi' }}
+      />
+    </Card>
+  )
+}
+
 function SuspiciousList({ items }) {
   return (
-    <Card className="flex min-w-0 flex-[2_1_340px] flex-col gap-3">
+    <Card className="flex min-w-0 flex-[2_1_390px] flex-col gap-3">
       <h2 className="m-0 flex items-center gap-2 text-[17px] leading-6 font-semibold text-error">
         <TriangleAlert size={18} strokeWidth={1.9} aria-hidden="true" />
         Shubhali urinishlar · {items.length}
@@ -109,10 +186,11 @@ export default function ResultsPage({ page }) {
     groups?.find(hasResults) ??
     groups?.[0]
   const groupId = params.get('group') ?? (fallback ? String(fallback.id) : null)
+  const isAllSuspicious = groupId === ALL_SUSPICIOUS
   const selected = groups?.find((group) => String(group.id) === groupId)
 
-  const { data: results, error, reload } = useResults(groupId)
-  const isCurrent = results && String(results.group.id) === groupId
+  const { data: results, error, reload } = useResults(isAllSuspicious ? null : groupId)
+  const isCurrent = !isAllSuspicious && results && String(results.group.id) === groupId
 
   const handleExport = async (kind, download) => {
     setExporting(kind)
@@ -126,9 +204,11 @@ export default function ResultsPage({ page }) {
     }
   }
 
-  const description = isCurrent
-    ? `Guruh ${results.group.name} · ${results.group.member_count} tinglovchi · ${results.summary.passed} / ${results.summary.finished} o'tgan`
-    : page.description
+  let description = page.description
+  if (isAllSuspicious) description = "Barcha guruhlar bo'yicha"
+  else if (isCurrent) {
+    description = `Guruh ${results.group.name} · ${results.group.member_count} tinglovchi`
+  }
 
   return (
     <>
@@ -144,38 +224,45 @@ export default function ResultsPage({ page }) {
               value={groupId ?? ''}
               onChange={(event) => setParams({ group: event.target.value })}
             >
+              <option value={ALL_SUSPICIOUS}>Barcha shubhali urinishlar</option>
               {groups?.map((group) => (
                 <option key={group.id} value={group.id}>
                   {group.name}
                 </option>
               ))}
             </FilterSelect>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={Download}
-              disabled={!selected}
-              loading={exporting === 'xlsx'}
-              onClick={() => handleExport('xlsx', downloadResultsExcel)}
-            >
-              Excel
-            </Button>
-            <Button
-              size="sm"
-              icon={FileText}
-              disabled={!selected}
-              loading={exporting === 'pdf'}
-              onClick={() => handleExport('pdf', downloadProtocol)}
-            >
-              PDF protokol
-            </Button>
+            {!isAllSuspicious && (
+              <>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon={Download}
+                  disabled={!selected}
+                  loading={exporting === 'xlsx'}
+                  onClick={() => handleExport('xlsx', downloadResultsExcel)}
+                >
+                  Excel
+                </Button>
+                <Button
+                  size="md"
+                  icon={Download}
+                  disabled={!selected}
+                  loading={exporting === 'pdf'}
+                  onClick={() => handleExport('pdf', downloadProtocol)}
+                >
+                  PDF protokol
+                </Button>
+              </>
+            )}
           </>
         }
       />
 
       {exportError && <Alert tone="error">{exportError}</Alert>}
 
-      {(error || groupsError) && (
+      {isAllSuspicious && <AllSuspicious onOpenGroup={(id) => setParams({ group: id })} />}
+
+      {!isAllSuspicious && (error || groupsError) && (
         <Card>
           <EmptyState
             icon={CircleAlert}
@@ -185,7 +272,7 @@ export default function ResultsPage({ page }) {
             action={
               <Button
                 variant="secondary"
-                size="sm"
+                size="xs"
                 icon={Loader2}
                 onClick={() => (groupsError ? reloadGroups() : reload())}
               >
@@ -196,7 +283,7 @@ export default function ResultsPage({ page }) {
         </Card>
       )}
 
-      {!error && !groupsError && !isCurrent && (
+      {!isAllSuspicious && !error && !groupsError && !isCurrent && (
         <Card>
           <EmptyState icon={Loader2} spin title="Yuklanmoqda" />
         </Card>
@@ -205,7 +292,7 @@ export default function ResultsPage({ page }) {
       {isCurrent && (
         <>
           <div className="flex flex-wrap items-stretch gap-6">
-            <Card className="flex min-w-0 flex-[3_1_520px] flex-col gap-4">
+            <Card className="flex min-w-0 flex-[3_1_570px] flex-col gap-4">
               <div>
                 <h2 className="m-0 text-[17px] leading-6 font-semibold">To'g'ri javoblar taqsimoti</h2>
                 <p className="mt-1 mb-0 text-[13px] leading-[19px] text-ink-600">
@@ -231,8 +318,10 @@ export default function ResultsPage({ page }) {
           <Card className="flex flex-col gap-3">
             <h2 className="m-0 text-[17px] leading-6 font-semibold">Tinglovchilar natijalari</h2>
             <DataTable
+              compact
               columns={COLUMNS}
-              rows={results.rows}
+              rows={results.rows.flatMap(expandAttempts)}
+              rowKey={(row) => row.rowKey}
               minWidth={860}
               empty={{ title: "Guruhda tinglovchilar yo'q" }}
             />

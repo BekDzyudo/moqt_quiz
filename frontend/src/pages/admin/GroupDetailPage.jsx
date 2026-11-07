@@ -1,11 +1,11 @@
 import {
   CircleAlert,
-  FileUp,
-  KeyRound,
+  Upload,
+  Key,
   Loader2,
   Lock,
   LockOpen,
-  Pencil,
+  PenLine,
   RotateCcw,
   UserPlus,
   Users,
@@ -37,7 +37,7 @@ import EmptyState from '../../components/ui/EmptyState.jsx'
 import PageHeader from '../../components/ui/PageHeader.jsx'
 import StatusBadge from '../../components/ui/StatusBadge.jsx'
 import { GROUP_STATUS } from '../../lib/groupStatus.js'
-import { formatTime } from '../../lib/time.js'
+import { formatDateMinutes } from '../../lib/time.js'
 import { usePolling } from '../../lib/usePolling.js'
 
 const POLL_MS = 5000
@@ -67,14 +67,26 @@ const MEMBER_COLUMNS = [
   {
     key: 'status',
     header: 'Holat',
-    render: ({ live }) => (
-      <StatusBadge tone={LIVE_STATUS[live.status].tone}>{LIVE_STATUS[live.status].label}</StatusBadge>
-    ),
+    render: ({ live }) =>
+      live.retake_pending ? (
+        <StatusBadge tone="warning">Qayta topshiradi</StatusBadge>
+      ) : (
+        <StatusBadge tone={LIVE_STATUS[live.status].tone}>{LIVE_STATUS[live.status].label}</StatusBadge>
+      ),
   },
   {
     key: 'progress',
     header: 'Progress',
-    render: ({ live }) => <span className="text-ink-600">{live.progress ?? '—'}</span>,
+    render: ({ live }) => (
+      <div className="flex flex-col gap-0.5 text-ink-600">
+        <span>{live.progress ?? '—'}</span>
+        {live.previous?.map((item) => (
+          <span key={item} className="text-[13px]">
+            {item}
+          </span>
+        ))}
+      </div>
+    ),
   },
   {
     key: 'exits',
@@ -90,7 +102,7 @@ const MEMBER_COLUMNS = [
 
 function InfoCard({ label, children }) {
   return (
-    <Card className="flex flex-col gap-2 p-5">
+    <Card padding="p-5" className="flex flex-col gap-2">
       <div className="text-[13px] font-semibold text-ink-600">{label}</div>
       {children}
     </Card>
@@ -100,7 +112,7 @@ function InfoCard({ label, children }) {
 function statusLabel(group) {
   const { label } = GROUP_STATUS[group.test_status]
   return group.test_status === 'open' && group.opened_at
-    ? `Test ochiq · ${formatTime(group.opened_at).slice(0, 5)} dan`
+    ? `Test ochiq · ${formatDateMinutes(group.opened_at)} dan`
     : label
 }
 
@@ -162,7 +174,7 @@ export default function GroupDetailPage({ page }) {
             },
             {
               label: 'Login-parolni qayta yaratish',
-              icon: KeyRound,
+              icon: Key,
               onSelect: () => memberDialog('credential', member),
             },
           ]}
@@ -214,24 +226,26 @@ export default function GroupDetailPage({ page }) {
         }
         actions={
           <>
-            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => setDialog('edit')}>
-              Tahrirlash
-            </Button>
-            <Button variant="secondary" size="sm" icon={UserPlus} onClick={() => setDialog('member')}>
-              Tinglovchi qo'shish
-            </Button>
-            <Button variant="secondary" size="sm" icon={FileUp} onClick={() => setDialog('import')}>
+            <Button variant="secondary" size="md" icon={Upload} onClick={() => setDialog('import')}>
               Excel import
             </Button>
             {isOpen ? (
-              <Button variant="dark" size="sm" icon={Lock} onClick={() => setDialog('close')}>
+              <Button variant="dark" size="md" icon={Lock} onClick={() => setDialog('close')}>
                 Testni yopish
               </Button>
             ) : (
-              <Button size="sm" icon={LockOpen} onClick={() => setDialog('open')}>
+              <Button size="md" icon={LockOpen} onClick={() => setDialog('open')}>
                 {group.test_status === 'finished' ? 'Qayta ochish' : 'Testni ochish'}
               </Button>
             )}
+            <ActionMenu
+              size="md"
+              label="Guruh amallari"
+              items={[
+                { label: 'Tahrirlash', icon: PenLine, onSelect: () => setDialog('edit') },
+                { label: "Tinglovchi qo'shish", icon: UserPlus, onSelect: () => setDialog('member') },
+              ]}
+            />
           </>
         }
       />
@@ -267,6 +281,7 @@ export default function GroupDetailPage({ page }) {
         </div>
 
         <DataTable
+          compact
           columns={columns}
           rows={members ?? []}
           loading={!members && !membersError}
@@ -331,7 +346,7 @@ export default function GroupDetailPage({ page }) {
         <ConfirmModal
           title="Login-parolni qayta yaratasizmi?"
           confirmLabel="Qayta yaratish"
-          icon={KeyRound}
+          icon={Key}
           onConfirm={handleRegenerateMember}
           onClose={closeDialog}
         >

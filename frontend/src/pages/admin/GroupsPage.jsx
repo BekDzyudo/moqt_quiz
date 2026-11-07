@@ -59,7 +59,7 @@ export default function GroupsPage({ page }) {
         title={page.label}
         description={page.description}
         actions={
-          <Button size="sm" icon={Plus} onClick={() => setCreating(true)}>
+          <Button size="md" icon={Plus} onClick={() => setCreating(true)}>
             Yangi guruh
           </Button>
         }

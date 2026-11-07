@@ -1,4 +1,4 @@
-import { KeyRound, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { ROLES } from '../../lib/roles.js'
@@ -34,7 +34,7 @@ export default function AdminLayout() {
     <div className="flex min-h-screen flex-wrap">
       <nav
         aria-label="Asosiy menyu"
-        className="flex min-w-0 flex-[1_1_248px] flex-col gap-1 border-r border-border-200 bg-surface-card px-4 py-6"
+        className="flex min-w-0 flex-[1_1_248px] flex-col gap-1 border-r [&>*]:shrink-0 border-border-200 bg-surface-card px-4 py-6 min-[808px]:sticky min-[808px]:top-0 min-[808px]:h-screen min-[808px]:self-start min-[808px]:overflow-y-auto"
       >
         <BrandMark className="px-2 pb-5" />
 
@@ -53,21 +53,26 @@ export default function AdminLayout() {
           </>
         )}
 
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-border-200 px-2 pt-4">
-          <div className="min-w-0 flex-[1_1_150px]">
-            <div className="leading-5 font-semibold">{user.full_name}</div>
-            <div className="text-[13px] leading-[19px] text-ink-600">{ROLES[user.role]}</div>
-          </div>
-          <div className="flex shrink-0 gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={KeyRound}
-              aria-label="Parolni o'zgartirish"
+        <div className="mt-auto flex items-center justify-between gap-2 border-t border-border-200 px-2 pt-4">
+          <div className="min-w-0">
+            <div className="font-semibold">{user.full_name}</div>
+            <div className="text-[13px] text-ink-600">{ROLES[user.role]}</div>
+            <button
+              type="button"
               onClick={() => setChangingPassword(true)}
-            />
-            <Button variant="secondary" size="sm" icon={LogOut} aria-label="Chiqish" onClick={logout} />
+              className="relative cursor-pointer text-left text-[13px] leading-[18px] text-brand-500 underline after:absolute after:-inset-y-3 after:inset-x-0 after:content-[''] hover:text-brand-900"
+            >
+              Parolni o'zgartirish
+            </button>
           </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={LogOut}
+            aria-label="Chiqish"
+            className="shrink-0"
+            onClick={logout}
+          />
         </div>
       </nav>
 

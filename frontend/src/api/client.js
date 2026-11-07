@@ -37,10 +37,21 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+async function decodeBlobError(response) {
+  if (!(response?.data instanceof Blob) || !response.data.type.includes('json')) return
+  try {
+    response.data = JSON.parse(await response.data.text())
+  } catch {
+    // Matn o'qilmasa umumiy xabar ko'rsatiladi.
+  }
+}
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { config, response } = error
+    await decodeBlobError(response)
+
     if (response?.status !== 401 || !readTokens()) throw error
 
     if (response.data?.code === 'session_replaced') {

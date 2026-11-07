@@ -47,7 +47,7 @@ export default function WaitingScreen({ test, onStarted }) {
       <PageBar />
       <main className="flex flex-1 justify-center px-4 py-12 sm:px-6">
         <div className="flex w-full max-w-[880px] flex-col gap-5">
-          <Card className="flex flex-col gap-6 p-8 shadow-card">
+          <Card padding="p-8" className="flex flex-col gap-6 shadow-card">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex flex-col gap-1.5">
                 <div className="text-[13px] leading-[18px] font-semibold text-ink-600">
@@ -58,16 +58,16 @@ export default function WaitingScreen({ test, onStarted }) {
                 </h1>
               </div>
               {isOpen ? (
-                <StatusBadge tone="success">Test ochiq</StatusBadge>
+                <StatusBadge large tone="success">Test ochiq</StatusBadge>
               ) : (
-                <StatusBadge tone="warning">Test hali ochilmagan</StatusBadge>
+                <StatusBadge large tone="warning">Test hali ochilmagan</StatusBadge>
               )}
             </div>
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-              <StatTile label="Savollar soni" value={`${test.set.question_count} ta`} />
-              <StatTile label="Vaqt" value={`${test.set.duration_minutes} daqiqa`} />
-              <StatTile label="O'tish chegarasi" value={`${test.set.pass_score} ta to'g'ri`} />
+              <StatTile label="Savollar soni" value={`${test.set.question_count} ta`} padding="p-4" />
+              <StatTile label="Vaqt" value={`${test.set.duration_minutes} daqiqa`} padding="p-4" />
+              <StatTile label="O'tish chegarasi" value={`${test.set.pass_score} ta to'g'ri`} padding="p-4" />
             </div>
 
             {!isOpen && (
@@ -78,15 +78,15 @@ export default function WaitingScreen({ test, onStarted }) {
                   aria-hidden="true"
                   className="mt-[3px] shrink-0 text-brand-900"
                 />
-                <span>
-                  Admin testni ochgach, shu yerda "Testni boshlash" tugmasi faollashadi. Sahifani
+                <span className="leading-[23px]">
+                  Admin testni ochgach, shu yerda "Testni boshlash" tugmasi paydo bo'ladi. Sahifani
                   yangilash shart emas.
                 </span>
               </div>
             )}
           </Card>
 
-          <Card className="flex flex-col gap-4 p-8">
+          <Card padding="p-8" className="flex flex-col gap-4">
             <h2 className="m-0 text-xl leading-7 font-bold">Test qoidalari</h2>
             <ol className="m-0 flex list-decimal flex-col gap-2 pl-5">
               {RULES.map((rule) => (
@@ -102,6 +102,7 @@ export default function WaitingScreen({ test, onStarted }) {
             <div className="flex justify-end">
               <Button
                 icon={Play}
+                px="px-6"
                 loading={starting}
                 disabled={!isOpen || !agreed}
                 onClick={handleStart}

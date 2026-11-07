@@ -18,6 +18,10 @@ export function useResults(groupId) {
   )
 }
 
+const fetchSuspicious = () => api.get('/results/suspicious/').then(data)
+
+export const useSuspiciousAttempts = () => useRequest(fetchSuspicious)
+
 async function download(path, groupId, filename) {
   const { data: blob } = await api.get(path, { params: { group: groupId }, responseType: 'blob' })
   saveBlob(blob, filename)

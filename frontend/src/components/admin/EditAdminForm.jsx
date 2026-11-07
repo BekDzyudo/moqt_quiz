@@ -1,4 +1,4 @@
-import { Check, Trash2 } from 'lucide-react'
+import { Check, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { updateAdmin } from '../../api/admins.js'
 import { useFormErrors } from '../../lib/useFormErrors.js'
@@ -53,7 +53,7 @@ export default function EditAdminForm({ admin, onSaved, onDelete }) {
       ref={ref}
       noValidate
       onSubmit={handleSubmit}
-      className="flex min-w-0 flex-[2_1_340px] flex-col gap-4 rounded-2xl border border-border-200 bg-surface-card p-6 shadow-card"
+      className="flex min-w-0 flex-[2_1_390px] flex-col gap-4 rounded-2xl border border-border-200 bg-surface-card p-6 shadow-card"
     >
       <div>
         <div className="text-[13px] font-semibold text-ink-600">Tahrirlanmoqda</div>
@@ -111,10 +111,10 @@ export default function EditAdminForm({ admin, onSaved, onDelete }) {
       {saved && <Alert tone="success">O'zgarishlar saqlandi.</Alert>}
 
       <div className="flex flex-wrap justify-between gap-3 border-t border-border-200 pt-4">
-        <Button variant="dangerOutline" size="sm" icon={Trash2} onClick={onDelete}>
+        <Button variant="dangerOutline" size="md" icon={Trash} px="px-3.5" onClick={onDelete}>
           O'chirish
         </Button>
-        <Button type="submit" size="sm" icon={Check} loading={saving}>
+        <Button type="submit" size="md" icon={Check} px="px-[18px]" loading={saving}>
           Saqlash
         </Button>
       </div>

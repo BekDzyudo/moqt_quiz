@@ -142,11 +142,27 @@ describe('natijalar', () => {
 
     const { data } = await call('GET', `/results/?group=${group.id}`, { token: admin })
     assert.equal(data.rows[0].correct_count, 4)
+    assert.deepEqual(
+      data.rows[0].attempts.map((item) => [item.label, item.correct_count, item.retake_reason]),
+      [
+        ['1-urinish', 1, null],
+        ['2-urinish', 4, 'Elektr'],
+      ],
+    )
+
+    const { data: members } = await call('GET', `/groups/${group.id}/members/`, { token: admin })
+    assert.deepEqual(members[0].live.previous, ["1-urinish: 1 / 4 · O'tmadi"])
 
     const file = await download(`/results/export.xlsx?group=${group.id}`, admin)
     const workbook = new ExcelJS.Workbook()
     await workbook.xlsx.load(file.buffer)
-    assert.equal(workbook.getWorksheet('Natijalar').getCell('M2').value, 'Elektr')
+    const sheet = workbook.getWorksheet('Natijalar')
+    assert.equal(sheet.rowCount, 3)
+    assert.equal(sheet.getCell('E2').value, 1)
+    assert.equal(sheet.getCell('N2').value, '1-urinish')
+    assert.equal(sheet.getCell('E3').value, 4)
+    assert.equal(sheet.getCell('M3').value, 'Elektr')
+    assert.equal(sheet.getCell('N3').value, '2-urinish')
   })
 })
 
@@ -270,6 +286,43 @@ describe('namuna urinishlar', () => {
 
     const listener = await tokenFor('AKT01-017', 'Ab3dE9')
     assert.equal((await call('POST', '/me/test/start/', { token: listener, body: {} })).status, 200)
+  })
+})
+
+describe('shubhali urinishlar: barcha guruhlar', () => {
+  it('bosh panel soni bilan ro\'yxat bir xil, guruh nomi bor', async () => {
+    const admin = await adminToken()
+    const { group, tokens } = await smallGroup(admin, { members: 2 })
+    await takeTest(tokens[0], 4, 1000)
+    await takeTest(tokens[1], 4, 1000)
+
+    const { data: list } = await call('GET', '/results/suspicious/', { token: admin })
+    const { data: dashboard } = await call('GET', '/dashboard/', { token: admin })
+    assert.equal(list.length, 2)
+    assert.equal(dashboard.suspicious_count, list.length)
+    assert.equal(list[0].group.name, group.name)
+    assert.ok(list[0].reasons.length > 0)
+  })
+
+  it("qayta topshirilgach eski shubhali urinish yo'qolmaydi", async () => {
+    const admin = await adminToken()
+    const { group, tokens, ids } = await smallGroup(admin, { members: 1 })
+    await takeTest(tokens[0], 4, 1000)
+    await call('POST', `/groups/${group.id}/members/${ids[0]}/retake/`, { token: admin, body: { reason: 'Sabab' } })
+    await takeTest(tokens[0], 4, 30000)
+
+    const { data } = await call('GET', `/results/?group=${group.id}`, { token: admin })
+    assert.equal(data.suspicious.length, 1)
+    assert.equal((await call('GET', '/dashboard/', { token: admin })).data.suspicious_count, 1)
+  })
+
+  it('namuna ma\'lumotda ham sonlar teng', async () => {
+    context.api = createMockApi({ now: () => context.clock, seedDemo: true })
+    const admin = await adminToken()
+    const { data: list } = await call('GET', '/results/suspicious/', { token: admin })
+    const { data: dashboard } = await call('GET', '/dashboard/', { token: admin })
+    assert.ok(list.length >= 2)
+    assert.equal(dashboard.suspicious_count, list.length)
   })
 })
 

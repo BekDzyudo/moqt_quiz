@@ -221,10 +221,10 @@ Bu bosqich platformaning yuragi — DAXLSIZ QOIDALARning har biriga test yoz.
    bilan), aloqa tiklanganda tartib bilan yuboriladi. Ikki marta bosish
    ikkita so'rov bermaydi.
 5. Navigatsiya: oldingi/keyingi, 50 ta raqam setkasi (javob berilgan,
-   berilmagan, belgilangan, joriy — dizayndagi ranglar), "Keyinroq qaytaman",
-   klaviatura: ←/→ va 1–4 (A–D).
-6. Yakunlash: `Modallar.dc.html`dagi tasdiq (javob berilgan / javobsiz /
-   belgilangan soni, qolgan vaqt).
+   berilmagan, joriy — dizayndagi ranglar), klaviatura: ←/→ va 1–4 (A–D).
+   Savolni javobsiz o'tib ketish mumkin, keyin qaytib ishlanadi.
+6. Yakunlash: `Modallar.dc.html`dagi tasdiq (javob berilgan / javobsiz soni,
+   qolgan vaqt).
 7. Sahifa yangilansa yoki qayta login qilinsa — to'g'ridan-to'g'ri o'sha
    savolga, to'liq ekranga qaytish tugmasi bilan.
 

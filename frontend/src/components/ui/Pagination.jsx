@@ -15,7 +15,7 @@ export default function Pagination({ page, pageSize, count, onPageChange }) {
       <div className="flex gap-2">
         <Button
           variant="secondary"
-          size="sm"
+          size="xs"
           icon={ChevronLeft}
           aria-label="Oldingi sahifa"
           disabled={page === 1}
@@ -23,7 +23,7 @@ export default function Pagination({ page, pageSize, count, onPageChange }) {
         />
         <Button
           variant="secondary"
-          size="sm"
+          size="xs"
           icon={ChevronRight}
           aria-label="Keyingi sahifa"
           disabled={last >= count}

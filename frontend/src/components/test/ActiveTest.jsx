@@ -176,7 +176,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
           title="Testni ochib bo'lmadi"
           description={loadError}
           action={
-            <Button variant="secondary" size="sm" icon={Loader2} onClick={() => open(attemptId)}>
+            <Button variant="secondary" size="xs" icon={Loader2} onClick={() => open(attemptId)}>
               Qayta urinish
             </Button>
           }
@@ -235,11 +235,11 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
           </div>
           <Timer remaining={remaining} />
           {released && (
-            <Button variant="secondary" size="sm" icon={Maximize} onClick={handleReturn}>
+            <Button variant="secondary" size="md" icon={Maximize} onClick={handleReturn}>
               To'liq ekranga qaytish
             </Button>
           )}
-          <Button variant="dark" size="sm" icon={Flag} onClick={() => setDialog('finish')}>
+          <Button variant="dark" size="md" icon={Flag} px="px-[18px]" onClick={() => setDialog('finish')}>
             Testni yakunlash
           </Button>
         </div>

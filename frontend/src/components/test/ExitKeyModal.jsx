@@ -1,4 +1,4 @@
-import { LockOpen, X } from 'lucide-react'
+import { Key, LockOpen, X } from 'lucide-react'
 import { useState } from 'react'
 import { unlockExit } from '../../api/attempt.js'
 import { errorMessage } from '../../api/client.js'
@@ -27,8 +27,8 @@ export default function ExitKeyModal({ attemptId, onClose, onUnlocked }) {
   }
 
   return (
-    <Modal open onClose={onClose} title="To'liq ekrandan chiqish">
-      <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <Modal open onClose={onClose} title="To'liq ekrandan chiqish" icon={Key} iconTone="muted" width="max-w-[440px]" hideClose>
+      <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-5">
         <p className="m-0 text-ink-600">
           Ctrl + Alt + N bosildi. Faqat mas'ul shaxs chiqara oladi. Test to'xtamaydi, vaqt o'tib
           turadi.

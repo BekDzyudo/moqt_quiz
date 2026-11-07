@@ -1,4 +1,4 @@
-import { Check, Eye, EyeOff, KeyRound, RefreshCw, X } from 'lucide-react'
+import { Check, Eye, EyeOff, Key, RotateCw, X } from 'lucide-react'
 import { useState } from 'react'
 import { setExitPassword } from '../../../api/groups.js'
 import { useFormErrors } from '../../../lib/useFormErrors.js'
@@ -54,7 +54,7 @@ function ExitPasswordModal({ groupId, onClose, onSaved }) {
         <div className="flex flex-wrap justify-between gap-3">
           <Button
             variant="secondary"
-            icon={RefreshCw}
+            icon={RotateCw}
             loading={saving === 'generate'}
             onClick={() => save(undefined, 'generate')}
           >
@@ -95,7 +95,7 @@ export default function ExitPasswordCard({ group, onChanged }) {
   else if (plain && visible) value = plain
 
   return (
-    <Card className="flex flex-col gap-2 p-5">
+    <Card padding="p-5" className="flex flex-col gap-2">
       <div className="text-[13px] font-semibold text-ink-600">Chiqish paroli (Ctrl + Alt + N)</div>
       <div
         className={
@@ -110,14 +110,14 @@ export default function ExitPasswordCard({ group, onChanged }) {
         {plain && (
           <Button
             variant="secondary"
-            size="sm"
+            size="xs"
             icon={visible ? EyeOff : Eye}
             onClick={() => setVisible(!visible)}
           >
             {visible ? 'Yashirish' : "Ko'rsatish"}
           </Button>
         )}
-        <Button variant="secondary" size="sm" icon={KeyRound} onClick={() => setEditing(true)}>
+        <Button variant="secondary" size="xs" icon={Key} onClick={() => setEditing(true)}>
           {isSet ? "O'zgartirish" : "O'rnatish"}
         </Button>
       </div>

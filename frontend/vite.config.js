@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import { mockApiPlugin } from './mock-api/vite-plugin.js'
 
 const CSP = [
@@ -25,12 +25,17 @@ const SECURITY_HEADERS = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
 }
 
-// Django tayyor bo'lganda mockApiPlugin() o'rniga server.proxy['/api'] yoziladi.
-export default defineConfig({
-  plugins: [react(), tailwindcss(), mockApiPlugin()],
-  // Windows'da standart holatda faqat ::1 tinglanadi va 127.0.0.1 ochilmaydi.
-  server: { host: '127.0.0.1' },
-  // Production sarlavhalari: docs/XAVFSIZLIK.md dagi nginx sozlamasi bilan bir xil.
-  // Dev serverda qo'yilmaydi, chunki HMR ichki skript ishlatadi.
-  preview: { headers: SECURITY_HEADERS },
+// API_PROXY_TARGET berilsa so'rovlar real backendga ketadi, aks holda mock ishlaydi.
+export default defineConfig(({ mode }) => {
+  const target = loadEnv(mode, process.cwd(), '').API_PROXY_TARGET
+  const proxy = target ? { '/api': { target, changeOrigin: true } } : undefined
+
+  return {
+    plugins: [react(), tailwindcss(), ...(target ? [] : [mockApiPlugin()])],
+    // Windows'da standart holatda faqat ::1 tinglanadi va 127.0.0.1 ochilmaydi.
+    server: { host: '127.0.0.1', proxy },
+    // Production sarlavhalari: docs/XAVFSIZLIK.md dagi nginx sozlamasi bilan bir xil.
+    // Dev serverda qo'yilmaydi, chunki HMR ichki skript ishlatadi.
+    preview: { headers: SECURITY_HEADERS, proxy },
+  }
 })

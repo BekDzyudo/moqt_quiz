@@ -1,4 +1,4 @@
-import { Check, RefreshCw, X } from 'lucide-react'
+import { Check, RotateCw, X } from 'lucide-react'
 import { useState } from 'react'
 import { syncQuestionSet } from '../../../api/bank.js'
 import { useFormErrors } from '../../../lib/useFormErrors.js'
@@ -74,7 +74,7 @@ function SyncForm({ sets, defaultSet, onClose, onSynced }) {
         <Button variant="secondary" icon={X} onClick={onClose}>
           Bekor qilish
         </Button>
-        <Button type="submit" icon={RefreshCw} loading={syncing}>
+        <Button type="submit" icon={RotateCw} loading={syncing}>
           Yangilash
         </Button>
       </div>

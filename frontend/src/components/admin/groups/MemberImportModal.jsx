@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, FileDown, FileUp, Search, X } from 'lucide-react'
+import { ArrowLeft, Check, FileDown, Upload, Search, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { errorMessage } from '../../../api/client.js'
 import { commitMembers, downloadMembersTemplate, previewMembers } from '../../../api/groups.js'
@@ -70,7 +70,7 @@ function SelectStep({ groupId, onPreview, onClose }) {
             clearField('file')
           }}
         />
-        <Button variant="dashed" icon={FileUp} onClick={() => fileInput.current.click()}>
+        <Button variant="dashed" icon={Upload} onClick={() => fileInput.current.click()}>
           {file ? file.name : 'Excel fayl tanlash'}
         </Button>
         {errors.fields.file && <Alert tone="error">{errors.fields.file}</Alert>}
@@ -80,7 +80,7 @@ function SelectStep({ groupId, onPreview, onClose }) {
         <p className="m-0">
           Ustunlar: F.I.Sh., PINFL, Tashkilot. Tashkilot bo'sh bo'lsa, guruh tashkiloti yoziladi.
         </p>
-        <Button variant="secondary" size="sm" icon={FileDown} onClick={handleTemplate}>
+        <Button variant="secondary" size="xs" icon={FileDown} onClick={handleTemplate}>
           Shablonni yuklab olish
         </Button>
       </div>
@@ -205,7 +205,7 @@ export default function MemberImportModal({ groupId, onClose, onImported }) {
   }
 
   return (
-    <Modal wide open onClose={onClose} title="Tinglovchilarni import qilish">
+    <Modal width="max-w-[760px]" open onClose={onClose} title="Tinglovchilarni import qilish">
       {body}
     </Modal>
   )

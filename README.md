@@ -4,9 +4,10 @@ KTRI malaka oshirish kurslari tinglovchilari uchun chiqish testi platformasi
 (test.moqt.uz). Loyiha konteksti: [CLAUDE.md](CLAUDE.md), bosqichlar:
 [docs/BOSQICHLAR.md](docs/BOSQICHLAR.md).
 
-Hozircha faqat frontend bor. Backend o'rnida Vite dev server ichida ishlaydigan
-mock API turadi (`frontend/mock-api/`). U `/api/v1/` kontraktiga amal qiladi va
-Django tayyor bo'lganda proxy bilan almashtiriladi.
+Bu repozitoriyda frontend bor, backendni boshqa dasturchi yozadi. Hozircha uning
+o'rnida Vite dev server ichida ishlaydigan mock API turadi (`frontend/mock-api/`).
+Mock `/api/v1/` kontraktiga amal qiladi, shuning uchun real backendga o'tishda kod
+o'zgarmaydi.
 
 ## Ishga tushirish
 
@@ -22,6 +23,21 @@ npm install
 Keyin `npm run dev` loyiha ildizida ham, `frontend/` ichida ham ishlaydi.
 Sayt http://localhost:5173 manzilida ochiladi. Mock API shu buyruq bilan birga
 ishlaydi, alohida ishga tushirilmaydi.
+
+## Real backendga ulash
+
+`frontend/.env.local` faylini yarating va dev serverni qayta ishga tushiring:
+
+```sh
+API_PROXY_TARGET=http://127.0.0.1:8000
+```
+
+Shundan keyin mock o'chadi va `/api` so'rovlari ko'rsatilgan manzilga ketadi. Faylni
+olib tashlasangiz, mock qaytadi. Production'da frontend va API bitta domenda ishlaydi:
+nginx `dist/` ni beradi va `/api` ni backendga uzatadi.
+
+Backend quyidagilarga amal qilishi kerak: `CLAUDE.md` dagi kontrakt,
+[docs/API_QOSHIMCHALAR.md](docs/API_QOSHIMCHALAR.md) va `frontend/mock-api/` testlari.
 
 ## Namuna hisoblar (faqat mock)
 

@@ -1,7 +1,19 @@
 # API kontraktiga qo'shimchalar
 
-`CLAUDE.md` dagi kontraktdan tashqari frontend tayanadigan narsalar. Django yozilganda
-mock (`frontend/mock-api/`) va uning testlari asosiy manba bo'ladi.
+Backend dasturchisi uchun. `CLAUDE.md` dagi kontraktdan tashqari frontend tayanadigan
+narsalar. Aniq javob shakllari uchun mock (`frontend/mock-api/`) va uning testlari asosiy
+manba. Mock'ni o'chirish: `frontend/.env.local` da `API_PROXY_TARGET`, README'ga qarang.
+
+## Ulanish shartlari
+
+- API bitta domenda, `/api/v1/` ostida, yo'llar `/` bilan tugaydi.
+- Autentifikatsiya: `Authorization: Bearer <access>`.
+- `image_url` brauzer ochadigan yo'l qaytaradi. `/api/` ostida bo'lmasa, nginx'da ham
+  ochilishi kerak, CSP faqat o'z domenidagi rasmlarga ruxsat beradi.
+- Sanalar ISO 8601 UTC. Frontend ularni Toshkent vaqtida ko'rsatadi.
+- Excel va PDF javoblari fayl sifatida, xato bo'lsa `application/json` da `{code, detail}`.
+- `DRF` ning standart validatsiya javobi (`{field: [..]}`) ishlamaydi: exception handler
+  uni pastdagi `validation_error` shakliga keltirishi kerak.
 
 ## Umumiy
 
@@ -58,13 +70,15 @@ mock (`frontend/mock-api/`) va uning testlari asosiy manba bo'ladi.
 - `GET /groups/{id}/` javobida `credentials_count`, `exit_password_set`, `set`.
 - `PATCH /groups/{id}/` `scheduled_open_at`, `scheduled_close_at` ni qabul qiladi.
 - `GET /groups/{id}/members/`: `live: {status, progress, fullscreen_exits, suspicious,
-  can_retake}`.
+  can_retake, retake_pending, previous}`. `previous`: avvalgi urinishlar matni.
 - `POST /groups/{id}/credentials/` → `{count, credentials, pdf_base64, xlsx_base64}`.
 - `POST /groups/{id}/exit-password/` → `{password}`.
 - `POST /groups/{id}/close/` javobida `terminated`.
 
 ## Tinglovchi
 
+- Savolni belgilash yo'q: `flags` endpointi va `flagged` maydonlari kontraktdan olib
+  tashlangan. Mock'da ular hali bor, lekin frontend ishlatmaydi.
 - `GET /me/test/` javobida `retake_allowed` va `server_now`.
 - `GET /attempts/{id}/` javobida `fullscreen_exits`, `exit_limit`.
 - `GET /media/attempt/{key}`: urinishga xos rasm, test tugagach yopiladi.
@@ -75,6 +89,12 @@ mock (`frontend/mock-api/`) va uning testlari asosiy manba bo'ladi.
 ## Natijalar
 
 - `GET /results/` → `{group, set, chance_score, summary: {finished, passed}, distribution,
-  suspicious, rows}`. `rows` da PINFL yashirilgan.
+  suspicious, rows}`. `rows` da PINFL yashirilgan. Har bir qatorda `attempts`: barcha
+  urinishlar `{label, status, correct_count, n_total, percent, duration_seconds, passed,
+  retake_reason}`. Qatorning o'zi va `summary`, `distribution` oxirgi urinish bo'yicha.
+- `GET /results/suspicious/` → barcha guruhlardagi shubhali urinishlar `[{id, full_name,
+  group: {id, name}, score, reasons}]`. Qayta topshirishdan oldingilari ham kiradi.
+  `/dashboard/` dagi `suspicious_count` shu ro'yxat uzunligiga teng.
+- Excel va PDF protokolda har bir urinish alohida qator.
 - `GET /dashboard/` → `{open_groups, working_now, finished_today, suspicious_count,
   open_tests}`.

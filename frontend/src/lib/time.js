@@ -40,5 +40,9 @@ export function formatUzDate(date) {
 
 export const formatTime = (iso) => clock.format(new Date(iso))
 
+// 07.11.2026, 16:47
+export const formatDateMinutes = (iso) =>
+  `${dayMonthYear.format(new Date(iso)).replaceAll('/', '.')}, ${formatTime(iso).slice(0, 5)}`
+
 export const formatDateTime = (iso) =>
   `${dayMonthYear.format(new Date(iso)).replaceAll('/', '.')} ${formatTime(iso)}`

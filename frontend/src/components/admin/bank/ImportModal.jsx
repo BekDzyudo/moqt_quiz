@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, FileDown, FileUp, Search, X } from 'lucide-react'
+import { ArrowLeft, Check, FileDown, Upload, Search, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { commitImport, downloadImportTemplate, previewImport } from '../../../api/bank.js'
 import { errorMessage } from '../../../api/client.js'
@@ -93,7 +93,7 @@ function SelectStep({ sets, defaultSet, onPreview, onClose }) {
             clearField('file')
           }}
         />
-        <Button variant="dashed" icon={FileUp} onClick={() => fileInput.current.click()}>
+        <Button variant="dashed" icon={Upload} onClick={() => fileInput.current.click()}>
           {file ? file.name : 'Excel yoki Word fayl tanlash'}
         </Button>
         {errors.fields.file && <Alert tone="error">{errors.fields.file}</Alert>}
@@ -105,10 +105,10 @@ function SelectStep({ sets, defaultSet, onPreview, onClose }) {
           qatorlar, to'g'ri variant oldida * yoki qalin.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm" icon={FileDown} onClick={() => handleDownload('xlsx')}>
+          <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('xlsx')}>
             Excel shablon
           </Button>
-          <Button variant="secondary" size="sm" icon={FileDown} onClick={() => handleDownload('docx')}>
+          <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('docx')}>
             Word shablon
           </Button>
         </div>
@@ -241,7 +241,7 @@ function ImportFlow({ sets, defaultSet, onClose, onImported }) {
 
 export default function ImportModal({ open, sets, defaultSet, onClose, onImported }) {
   return (
-    <Modal wide open={open} onClose={onClose} title="Excel/Word import">
+    <Modal width="max-w-[760px]" open={open} onClose={onClose} title="Excel/Word import">
       <ImportFlow sets={sets} defaultSet={defaultSet} onClose={onClose} onImported={onImported} />
     </Modal>
   )

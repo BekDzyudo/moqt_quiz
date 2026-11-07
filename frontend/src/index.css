@@ -98,6 +98,12 @@ body.test-active input {
     color: var(--color-ink-900);
     font-family: var(--font-sans);
     font-size: 15px;
+    line-height: normal;
+  }
+
+  /* Dizaynda matn bloklari 23px, qolgani shriftning o'z balandligida. */
+  p,
+  li {
     line-height: 23px;
   }
 

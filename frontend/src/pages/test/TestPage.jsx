@@ -1,4 +1,4 @@
-import { CircleAlert, Loader2, Monitor, RefreshCw } from 'lucide-react'
+import { CircleAlert, Loader2, Monitor, RotateCw } from 'lucide-react'
 import { useEffect } from 'react'
 import { fetchMyTest } from '../../api/attempt.js'
 import { useRequest } from '../../api/useRequest.js'
@@ -41,7 +41,7 @@ export default function TestPage() {
             title="Test ma'lumotini olib bo'lmadi"
             description={error}
             action={
-              <Button variant="secondary" size="sm" icon={RefreshCw} onClick={reload}>
+              <Button variant="secondary" size="xs" icon={RotateCw} onClick={reload}>
                 Qayta urinish
               </Button>
             }

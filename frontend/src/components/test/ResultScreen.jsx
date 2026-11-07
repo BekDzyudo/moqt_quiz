@@ -1,4 +1,4 @@
-import { Check, CircleAlert, Loader2, LogOut, RefreshCw, X } from 'lucide-react'
+import { Check, CircleAlert, Loader2, LogOut, RotateCw, X } from 'lucide-react'
 import { useCallback } from 'react'
 import { fetchResult } from '../../api/attempt.js'
 import { useRequest } from '../../api/useRequest.js'
@@ -30,7 +30,7 @@ export default function ResultScreen({ attemptId, test }) {
           title="Natijani olib bo'lmadi"
           description={error}
           action={
-            <Button variant="secondary" size="sm" icon={RefreshCw} onClick={reload}>
+            <Button variant="secondary" size="xs" icon={RotateCw} onClick={reload}>
               Qayta urinish
             </Button>
           }
@@ -83,7 +83,7 @@ export default function ResultScreen({ attemptId, test }) {
           To'g'ri javoblar va savollar savollar bankini himoya qilish uchun ko'rsatilmaydi.
         </p>
 
-        <Button variant="secondary" icon={LogOut} onClick={logout}>
+        <Button variant="secondary" icon={LogOut} px="px-[22px]" onClick={logout}>
           Chiqish
         </Button>
       </section>

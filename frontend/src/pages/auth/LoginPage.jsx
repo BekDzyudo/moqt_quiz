@@ -107,6 +107,7 @@ export default function LoginPage() {
               label="Login"
               name="username"
               placeholder="Masalan: AKT01-017"
+              elevated
               autoComplete="username"
               autoCapitalize="none"
               spellCheck={false}
@@ -119,6 +120,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               placeholder="Parolni kiriting"
+              elevated
               autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -130,7 +132,7 @@ export default function LoginPage() {
             <Alert tone="error">{formError}</Alert>
           )}
 
-          <Button type="submit" icon={LogIn} loading={submitting} className="w-full">
+          <Button type="submit" icon={LogIn} loading={submitting} className="w-full tracking-[0.01em]">
             Kirish
           </Button>
 

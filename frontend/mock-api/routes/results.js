@@ -76,6 +76,47 @@ export function resultRoutes(state) {
   const percentOf = (attempt) =>
     Math.round((attempt.correct_count / attempt.questions.length) * 100)
 
+  const summarize = (attempt, index) => {
+    engine.touch(attempt)
+    const finished = attempt.status !== 'active'
+    return {
+      label: `${index + 1}-urinish`,
+      status: finished ? 'finished' : 'in_progress',
+      correct_count: finished ? attempt.correct_count : null,
+      n_total: attempt.questions.length,
+      percent: finished ? percentOf(attempt) : null,
+      duration_seconds: finished ? durationSeconds(attempt) : null,
+      passed: finished ? attempt.passed : null,
+      retake_reason: attempt.retake_reason,
+    }
+  }
+
+  // Eksportda har bir urinish alohida qator.
+  const perAttempt = ({ user }) => {
+    const attempts = engine.attemptsOf(user)
+    if (attempts.length === 0) return [{ user, attempt: null, label: '' }]
+    return attempts.map((attempt, index) => ({
+      user,
+      attempt: engine.touch(attempt),
+      label: attempts.length > 1 ? `${index + 1}-urinish` : '',
+    }))
+  }
+
+  // Har bir shubhali urinish, jumladan qayta topshirishdan oldingisi ham.
+  const suspiciousAttempts = (group) =>
+    engine.attempts
+      .filter((attempt) => attempt.suspicious && (!group || attempt.group === group.id))
+      .map((attempt) => ({
+        id: attempt.id,
+        full_name: users.find((user) => user.id === attempt.user).full_name,
+        group: {
+          id: attempt.group,
+          name: groups.find((candidate) => candidate.id === attempt.group).name,
+        },
+        score: `${attempt.correct_count ?? '—'} / ${attempt.questions.length}`,
+        reasons: attempt.suspicious_reasons.map((reason) => reason.detail),
+      }))
+
   const present = ({ user, attempt }) => {
     const finished = attempt && attempt.status !== 'active'
     return {
@@ -89,6 +130,7 @@ export function resultRoutes(state) {
       duration_seconds: finished ? durationSeconds(attempt) : null,
       passed: finished ? attempt.passed : null,
       suspicious: attempt?.suspicious ?? false,
+      attempts: engine.attemptsOf(user).map(summarize),
     }
   }
 
@@ -118,16 +160,15 @@ export function resultRoutes(state) {
           set.question_count,
           set.pass_score,
         ),
-        suspicious: members
-          .filter(({ attempt }) => attempt?.suspicious)
-          .map(({ user, attempt }) => ({
-            id: user.id,
-            full_name: user.full_name,
-            score: `${attempt.correct_count ?? '—'} / ${attempt.questions.length}`,
-            reasons: attempt.suspicious_reasons.map((reason) => reason.detail),
-          })),
+        suspicious: suspiciousAttempts(group),
         rows: members.map(present),
       }
+    },
+
+    'GET /results/suspicious/': async (req) => {
+      staff(req)
+      engine.activeAttempts().forEach(engine.touch)
+      return suspiciousAttempts()
     },
 
     'GET /results/export.xlsx': async (req) => {
@@ -151,12 +192,12 @@ export function resultRoutes(state) {
         { header: 'Shubhali', key: 'suspicious', width: 10 },
         { header: 'Sabablar', key: 'reasons', width: 50 },
         { header: 'Qayta topshirish', key: 'retake', width: 30 },
+        { header: 'Urinish', key: 'attempt_label', width: 12 },
       ]
       sheet.getRow(1).font = { bold: true }
 
-      for (const member of members) {
-        const { user, attempt } = member
-        const finished = isFinished(member)
+      for (const { user, attempt, label } of members.flatMap(perAttempt)) {
+        const finished = isFinished({ attempt })
         const row = {
           full_name: user.full_name,
           pinfl: user.pinfl,
@@ -177,6 +218,7 @@ export function resultRoutes(state) {
           suspicious: attempt?.suspicious ? 'Ha' : "Yo'q",
           reasons: attempt?.suspicious_reasons.map((reason) => reason.detail).join('; ') ?? '',
           retake: attempt?.retake_reason ?? '',
+          attempt_label: label,
         }
         sheet.addRow(safeRow(row))
       }
@@ -193,8 +235,8 @@ export function resultRoutes(state) {
       ]
       timing.getRow(1).font = { bold: true }
 
-      for (const { user, attempt } of members.filter(isFinished)) {
-        const row = { full_name: safeCell(user.full_name) }
+      for (const { user, attempt, label } of members.flatMap(perAttempt).filter(isFinished)) {
+        const row = { full_name: safeCell(label ? `${user.full_name} (${label})` : user.full_name) }
         for (const slot of attempt.questions) row[`q${slot.n}`] = Math.round(slot.time_spent_ms / 1000)
         timing.addRow(row)
       }
@@ -214,11 +256,11 @@ export function resultRoutes(state) {
       const set = setOf(group)
       const rows = memberResults(group)
         .toSorted((a, b) => a.user.full_name.localeCompare(b.user.full_name))
-        .map((member) => {
-          const { user, attempt } = member
-          const finished = isFinished(member)
+        .flatMap(perAttempt)
+        .map(({ user, attempt, label }) => {
+          const finished = isFinished({ attempt })
           return {
-            full_name: user.full_name,
+            full_name: label ? `${user.full_name} (${label})` : user.full_name,
             pinfl: user.pinfl,
             correct: finished ? `${attempt.correct_count} / ${attempt.questions.length}` : '—',
             percent: finished ? `${percentOf(attempt)}%` : '—',
@@ -252,16 +294,11 @@ export function resultRoutes(state) {
           attempt.status !== 'active' && tashkentDate.format(new Date(attempt.finished_at)) === today,
       )
 
-      const latest = users
-        .filter((user) => user.role === 'listener')
-        .map((user) => engine.latestAttempt(user))
-        .filter(Boolean)
-
       return {
         open_groups: openGroups.length,
         working_now: engine.activeAttempts().length,
         finished_today: finishedToday.length,
-        suspicious_count: latest.filter((attempt) => attempt.suspicious).length,
+        suspicious_count: suspiciousAttempts().length,
         open_tests: openGroups.map((group) => {
           const members = memberResults(group)
           return {

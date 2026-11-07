@@ -1,4 +1,4 @@
-import { Blocks, Plus, Save, SlidersHorizontal, Trash2, X } from 'lucide-react'
+import { Blocks, Plus, Save, SlidersHorizontal, Trash, X } from 'lucide-react'
 import { useState } from 'react'
 import Button from '../../components/ui/Button.jsx'
 import Card from '../../components/ui/Card.jsx'
@@ -43,7 +43,7 @@ export default function UiKitPage() {
           <Button variant="secondary" icon={X}>
             Bekor qilish
           </Button>
-          <Button variant="danger" icon={Trash2}>
+          <Button variant="danger" icon={Trash}>
             O'chirish
           </Button>
           <Button variant="ghost" icon={SlidersHorizontal} onClick={() => setDrawerOpen(true)}>

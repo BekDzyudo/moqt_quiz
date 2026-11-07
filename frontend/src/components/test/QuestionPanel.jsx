@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, CircleAlert, Flag, Loader2, RefreshCw } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CircleAlert, Loader2, RotateCw } from 'lucide-react'
 import { useAttemptStore } from '../../store/attempt.js'
 import Button from '../ui/Button.jsx'
 import EmptyState from '../ui/EmptyState.jsx'
@@ -12,7 +12,7 @@ function OptionButton({ letter, text, selected, onSelect }) {
       role="radio"
       aria-checked={selected}
       onClick={onSelect}
-      className={`flex min-h-16 cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-left text-[17px] leading-6 transition-colors duration-150 ${
+      className={`flex min-h-16 cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-left text-[17px] transition-colors duration-150 ${
         selected
           ? 'border-2 border-brand-700 bg-brand-soft font-semibold'
           : 'border border-border-400 bg-surface-card font-medium hover:bg-surface-muted'
@@ -36,7 +36,6 @@ export default function QuestionPanel() {
   const total = useAttemptStore((state) => state.total)
   const currentN = useAttemptStore((state) => state.currentN)
   const select = useAttemptStore((state) => state.select)
-  const toggleFlag = useAttemptStore((state) => state.toggleFlag)
   const goTo = useAttemptStore((state) => state.goTo)
   const retryQuestion = useAttemptStore((state) => state.retryQuestion)
 
@@ -52,7 +51,7 @@ export default function QuestionPanel() {
           title="Savol yuklanmadi"
           description={questionError}
           action={
-            <Button variant="secondary" size="sm" icon={RefreshCw} onClick={retryQuestion}>
+            <Button variant="secondary" size="xs" icon={RotateCw} onClick={retryQuestion}>
               Qayta urinish
             </Button>
           }
@@ -107,15 +106,11 @@ export default function QuestionPanel() {
           Oldingi
         </Button>
         <Button
-          variant="secondary"
-          icon={Flag}
-          aria-pressed={question.flagged}
-          className={question.flagged ? 'bg-warning-soft text-warning' : 'text-warning'}
-          onClick={toggleFlag}
+          icon={ChevronRight}
+          px="px-[22px]"
+          disabled={currentN === total}
+          onClick={() => goTo(currentN + 1)}
         >
-          Keyinroq qaytaman
-        </Button>
-        <Button icon={ChevronRight} disabled={currentN === total} onClick={() => goTo(currentN + 1)}>
           Keyingi
         </Button>
       </div>

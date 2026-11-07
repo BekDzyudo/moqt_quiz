@@ -1,4 +1,4 @@
-import { CircleAlert, Inbox, Loader2, RefreshCw } from 'lucide-react'
+import { CircleAlert, Inbox, Loader2, RotateCw } from 'lucide-react'
 import Button from './Button.jsx'
 import EmptyState from './EmptyState.jsx'
 
@@ -13,6 +13,7 @@ export default function DataTable({
   empty = { title: "Ma'lumot yo'q" },
   minWidth = 760,
   rowClassName = () => '',
+  compact = false,
 }) {
   if (loading) return <EmptyState icon={Loader2} spin title="Yuklanmoqda" />
 
@@ -25,7 +26,7 @@ export default function DataTable({
         description={error}
         action={
           onRetry && (
-            <Button variant="secondary" size="sm" icon={RefreshCw} onClick={onRetry}>
+            <Button variant="secondary" size="xs" icon={RotateCw} onClick={onRetry}>
               Qayta urinish
             </Button>
           )
@@ -62,7 +63,7 @@ export default function DataTable({
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={`px-3 py-3.5 ${column.align === 'right' ? 'text-right' : ''}`}
+                  className={`px-3 ${compact ? 'py-3' : 'py-3.5'} ${column.align === 'right' ? 'text-right' : ''}`}
                 >
                   {column.render ? column.render(row) : row[column.key]}
                 </td>

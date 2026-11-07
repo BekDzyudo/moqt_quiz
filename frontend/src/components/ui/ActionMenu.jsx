@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import Button from './Button.jsx'
 
 // Portal orqali: jadvalning overflow-x konteyneri menyuni kesmasin.
-export default function ActionMenu({ label, items }) {
+export default function ActionMenu({ label, items, size = 'xs' }) {
   const [position, setPosition] = useState(null)
   const trigger = useRef(null)
   const menu = useRef(null)
@@ -52,7 +52,7 @@ export default function ActionMenu({ label, items }) {
       <Button
         ref={trigger}
         variant="secondary"
-        size="sm"
+        size={size}
         icon={EllipsisVertical}
         aria-label={label}
         aria-haspopup="menu"

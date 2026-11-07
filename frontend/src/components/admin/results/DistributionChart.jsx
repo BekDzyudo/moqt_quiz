@@ -45,10 +45,10 @@ export default function DistributionChart({ data }) {
         <div
           role="img"
           aria-label="To'g'ri javoblar soni bo'yicha tinglovchilar taqsimoti. Aniq sonlar pastdagi jadvalda."
-          className="h-[260px] min-w-[440px]"
+          className="h-[288px] min-w-[440px]"
         >
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 24, right: 8, bottom: 8, left: 8 }} barCategoryGap="14%">
+            <BarChart data={data} margin={{ top: 24, right: 0, bottom: 0, left: 0 }} barCategoryGap="14%" maxBarSize={72}>
               <XAxis
                 dataKey="label"
                 interval={0}
@@ -59,7 +59,7 @@ export default function DistributionChart({ data }) {
               />
               <YAxis hide allowDecimals={false} />
               <Tooltip cursor={{ fill: '#eaf2fa' }} content={<ChartTooltip />} isAnimationActive={false} />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]} minPointSize={2} isAnimationActive={false}>
+              <Bar dataKey="count" radius={[6, 6, 0, 0]} minPointSize={2} isAnimationActive={false}>
                 {data.map((bucket) => (
                   <Cell
                     key={bucket.label}

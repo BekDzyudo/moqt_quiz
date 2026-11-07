@@ -1,4 +1,4 @@
-import { FileSearch, FileUp, Pencil, Plus, RefreshCw } from 'lucide-react'
+import { FileSearch, Upload, PenLine, Plus, RotateCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useQuestions, useQuestionSets } from '../../api/bank.js'
 import ImportModal from '../../components/admin/bank/ImportModal.jsx'
@@ -73,8 +73,8 @@ export default function QuestionsPage({ page }) {
       render: (row) => (
         <Button
           variant="secondary"
-          size="sm"
-          icon={Pencil}
+          size="xs"
+          icon={PenLine}
           aria-label={`${row.id}-savolni tahrirlash`}
           onClick={() => setEditing(row.id)}
         />
@@ -100,13 +100,13 @@ export default function QuestionsPage({ page }) {
         description={description}
         actions={
           <>
-            <Button variant="secondary" size="sm" icon={RefreshCw} onClick={() => setDialog('sync')}>
+            <Button variant="secondary" size="md" icon={RotateCw} onClick={() => setDialog('sync')}>
               API'dan yangilash
             </Button>
-            <Button variant="secondary" size="sm" icon={FileUp} onClick={() => setDialog('import')}>
+            <Button variant="secondary" size="md" icon={Upload} onClick={() => setDialog('import')}>
               Excel/Word import
             </Button>
-            <Button size="sm" icon={Plus} onClick={() => setEditing(NEW_QUESTION)}>
+            <Button size="md" icon={Plus} onClick={() => setEditing(NEW_QUESTION)}>
               Yangi savol
             </Button>
           </>

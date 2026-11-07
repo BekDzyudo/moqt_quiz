@@ -4,7 +4,6 @@ import {
   fetchQuestion,
   finishAttempt,
   saveAnswer,
-  saveFlag,
   sendEvent,
 } from '../api/attempt.js'
 import { errorMessage } from '../api/client.js'
@@ -31,36 +30,29 @@ function persist(attemptId) {
 
 function sendEntry(attemptId, entry) {
   if (entry.kind === 'answer') return saveAnswer(attemptId, entry.n, entry.key, entry.timeSpentMs)
-  if (entry.kind === 'flag') return saveFlag(attemptId, entry.n, entry.flagged)
   return sendEvent(attemptId, entry.type, entry.meta)
 }
 
 const isSaveEntry = (entry) => entry.kind !== 'event'
 
 // Serverda hali yo'q javoblar ekranda ko'rinishda qoladi.
-function applyPendingToLists(answered, flagged) {
-  let nextAnswered = answered
-  let nextFlagged = flagged
+function applyPendingAnswers(answered) {
+  let result = answered
 
   for (const entry of entries) {
     if (entry.kind === 'answer') {
-      nextAnswered = entry.key ? addSorted(nextAnswered, entry.n) : without(nextAnswered, entry.n)
-    }
-    if (entry.kind === 'flag') {
-      nextFlagged = entry.flagged ? addSorted(nextFlagged, entry.n) : without(nextFlagged, entry.n)
+      result = entry.key ? addSorted(result, entry.n) : without(result, entry.n)
     }
   }
-  return { answered: nextAnswered, flagged: nextFlagged }
+  return result
 }
 
 function applyPendingToQuestion(question) {
   const answer = entries.find((entry) => entry.kind === 'answer' && entry.n === question.n)
-  const flag = entries.find((entry) => entry.kind === 'flag' && entry.n === question.n)
 
   return {
     ...question,
     selected_key: answer ? answer.key : question.selected_key,
-    flagged: flag ? flag.flagged : question.flagged,
   }
 }
 
@@ -70,7 +62,6 @@ const initialState = {
   total: 0,
   currentN: 1,
   answered: [],
-  flagged: [],
   exits: 0,
   exitLimit: 0,
   deadlineAt: null,
@@ -178,7 +169,7 @@ export const useAttemptStore = create((set, get) => {
           currentN: attempt.current_n,
           exits: attempt.fullscreen_exits,
           exitLimit: attempt.exit_limit,
-          ...applyPendingToLists(attempt.answered, attempt.flagged),
+          answered: applyPendingAnswers(attempt.answered),
         })
         await loadQuestion(attempt.current_n)
         drain()
@@ -222,21 +213,6 @@ export const useAttemptStore = create((set, get) => {
           timeSpentMs: timeSpentMs + (previous?.timeSpentMs ?? 0),
         },
         (entry) => entry.kind === 'answer' && entry.n === question.n,
-      )
-    },
-
-    toggleFlag: () => {
-      const { question, flagged } = get()
-      if (!question) return
-
-      const next = !question.flagged
-      set({
-        question: { ...question, flagged: next },
-        flagged: next ? addSorted(flagged, question.n) : without(flagged, question.n),
-      })
-      enqueue(
-        { kind: 'flag', n: question.n, flagged: next },
-        (entry) => entry.kind === 'flag' && entry.n === question.n,
       )
     },
 

@@ -9,7 +9,7 @@ const CONTROL_SIZES = {
 
 // `as`: input, select yoki textarea. Select variantlari `children` orqali beriladi.
 const Field = forwardRef(function Field(
-  { label, error, hint, mono = false, as: Control = 'input', className = '', ...props },
+  { label, error, hint, mono = false, elevated = false, as: Control = 'input', className = '', ...props },
   ref,
 ) {
   const id = useId()
@@ -18,7 +18,7 @@ const Field = forwardRef(function Field(
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <label htmlFor={id} className="text-[13px] leading-[18px] font-semibold tracking-[0.01em] text-ink-600">
+      <label htmlFor={id} className="text-[13px] leading-[18px] font-semibold text-ink-600">
         {label}
       </label>
       <Control
@@ -26,7 +26,7 @@ const Field = forwardRef(function Field(
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={message ? messageId : undefined}
-        className={`w-full rounded-xl border bg-surface-card text-[15px] leading-5 font-medium text-ink-900 shadow-control ${
+        className={`w-full rounded-xl border bg-surface-card text-[15px] leading-5 font-medium text-ink-900 ${elevated ? 'shadow-control' : ''} ${
           CONTROL_SIZES[Control]
         } ${error ? 'border-error' : 'border-border-400'} ${mono ? 'font-mono' : ''}`}
         {...props}

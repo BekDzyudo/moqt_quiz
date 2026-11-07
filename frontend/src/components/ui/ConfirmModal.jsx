@@ -1,4 +1,4 @@
-import { Trash2, X } from 'lucide-react'
+import { Trash, X } from 'lucide-react'
 import { useState } from 'react'
 import { errorMessage } from '../../api/client.js'
 import Alert from './Alert.jsx'
@@ -9,7 +9,7 @@ import Modal from './Modal.jsx'
 export default function ConfirmModal({
   title,
   confirmLabel = "O'chirish",
-  icon = Trash2,
+  icon = Trash,
   variant = 'danger',
   onConfirm,
   onClose,

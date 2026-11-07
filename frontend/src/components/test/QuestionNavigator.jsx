@@ -3,14 +3,12 @@ import { useAttemptStore } from '../../store/attempt.js'
 
 const STYLES = {
   current: 'bg-brand-soft text-ink-900 border-2 border-ink-900',
-  flagged: 'bg-warning-soft text-warning border border-warning',
   answered: 'bg-brand-700 text-white border border-brand-700',
   empty: 'bg-surface-card text-ink-900 border border-border-400',
 }
 
 const LABELS = {
   current: 'joriy savol',
-  flagged: 'keyinroq qaytish uchun belgilangan',
   answered: 'javob berilgan',
   empty: 'javob berilmagan',
 }
@@ -18,7 +16,6 @@ const LABELS = {
 const LEGEND = [
   ['bg-brand-700', 'Javob berilgan'],
   ['bg-surface-card border border-border-400', 'Javob berilmagan'],
-  ['bg-warning-soft border border-warning', 'Keyinroq qaytaman'],
   ['border-2 border-ink-900', 'Joriy savol'],
 ]
 
@@ -26,12 +23,10 @@ export default function QuestionNavigator() {
   const total = useAttemptStore((state) => state.total)
   const currentN = useAttemptStore((state) => state.currentN)
   const answered = useAttemptStore((state) => state.answered)
-  const flagged = useAttemptStore((state) => state.flagged)
   const goTo = useAttemptStore((state) => state.goTo)
 
   const stateOf = (n) => {
     if (n === currentN) return 'current'
-    if (flagged.includes(n)) return 'flagged'
     return answered.includes(n) ? 'answered' : 'empty'
   }
 
@@ -59,7 +54,7 @@ export default function QuestionNavigator() {
       <div className="flex flex-col gap-2 text-[13px] leading-[18px] text-ink-600">
         {LEGEND.map(([swatch, label]) => (
           <div key={label} className="flex items-center gap-2">
-            <span aria-hidden="true" className={`size-3.5 rounded ${swatch}`} />
+            <span aria-hidden="true" className={`box-content size-3.5 rounded ${swatch}`} />
             {label}
           </div>
         ))}

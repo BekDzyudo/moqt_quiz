@@ -1,4 +1,4 @@
-import { RefreshCw } from 'lucide-react'
+import { RotateCw } from 'lucide-react'
 import { useState } from 'react'
 import { generatePassword } from '../../lib/password.js'
 import Button from '../ui/Button.jsx'
@@ -35,7 +35,7 @@ export default function PasswordField({ label, value, onChange, error }) {
         error={error}
         hint={reveal ? "Saqlashdan oldin parolni yozib oling: keyin ko'rinmaydi." : undefined}
       />
-      <Button variant="secondary" size="sm" icon={RefreshCw} onClick={handleGenerate}>
+      <Button variant="secondary" size="xs" icon={RotateCw} onClick={handleGenerate}>
         Parol generatsiya qilish
       </Button>
     </div>

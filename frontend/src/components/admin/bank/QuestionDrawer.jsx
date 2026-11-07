@@ -1,4 +1,4 @@
-import { Check, CircleAlert, ImagePlus, Loader2, Trash2, X } from 'lucide-react'
+import { Check, CircleAlert, Image, Loader2, Trash, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   createQuestion,
@@ -39,15 +39,15 @@ function OptionRow({ letter, option, correctLocked, onText, onSelect }) {
         disabled={correctLocked}
         onChange={onSelect}
         aria-label={`${letter} variant to'g'ri javob`}
-        className={`size-5 shrink-0 ${correct ? 'accent-success' : 'accent-brand-700'}`}
+        className={`mt-[3px] mr-[3px] ml-[5px] size-5 shrink-0 ${correct ? 'accent-success' : 'accent-brand-700'}`}
       />
-      <span className={`font-bold ${correct ? 'text-success' : 'text-ink-600'}`}>{letter}</span>
+      <span className={`text-[16px] font-bold ${correct ? 'text-success' : 'text-ink-600'}`}>{letter}</span>
       <input
         type="text"
         value={option.text}
         onChange={(event) => onText(event.target.value)}
         aria-label={`${letter} variant`}
-        className="h-9 min-w-0 flex-1 bg-transparent text-[15px] text-ink-900"
+        className="h-[38px] min-w-0 flex-1 bg-transparent px-0.5 text-[15px] text-ink-900"
       />
       {correct && (
         <span className="hidden text-[13px] font-bold whitespace-nowrap text-success sm:inline">
@@ -143,7 +143,8 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
           {question ? (
             <Button
               variant="dangerOutline"
-              icon={Trash2}
+              icon={Trash}
+              px="px-4"
               disabled={inUse}
               onClick={() => setConfirming(true)}
             >
@@ -153,7 +154,7 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
             <span />
           )}
           <div className="flex flex-wrap gap-3">
-            <Button variant="secondary" icon={X} onClick={onClose}>
+            <Button variant="secondary" icon={X} px="px-4" onClick={onClose}>
               Bekor qilish
             </Button>
             <Button type="submit" form={FORM_ID} icon={Check} loading={saving}>
@@ -214,7 +215,7 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
             <Button
               variant="dashed"
               size="sm"
-              icon={ImagePlus}
+              icon={Image}
               onClick={() => fileInput.current.click()}
             >
               {imageUrl ? 'Rasmni almashtirish' : "Rasm qo'shish"}
@@ -229,7 +230,7 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
         </div>
 
         <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
-          <legend className="mb-2 text-[13px] leading-[18px] font-semibold text-ink-600">
+          <legend className="mb-2 px-0.5 text-[13px] leading-[18px] font-semibold text-ink-600">
             Javob variantlari — to'g'risini belgilang
           </legend>
           {options.map((option, index) => (

@@ -1,4 +1,4 @@
-import { Pencil, Plus, UserRound } from 'lucide-react'
+import { PenLine, Plus, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { useAdmins } from '../../api/admins.js'
 import AddAdminModal from '../../components/admin/AddAdminModal.jsx'
@@ -52,8 +52,8 @@ export default function AdminsPage({ page }) {
       render: (admin) => (
         <Button
           variant="secondary"
-          size="sm"
-          icon={Pencil}
+          size="xs"
+          icon={PenLine}
           aria-label={`${admin.full_name} — tahrirlash`}
           onClick={() => setSelectedId(admin.id)}
         />
@@ -80,15 +80,16 @@ export default function AdminsPage({ page }) {
         title={page.label}
         description={page.description}
         actions={
-          <Button size="sm" icon={Plus} onClick={() => setAdding(true)}>
+          <Button size="md" icon={Plus} onClick={() => setAdding(true)}>
             Admin qo'shish
           </Button>
         }
       />
 
       <div className="flex flex-wrap items-start gap-6">
-        <Card className="min-w-0 flex-[3_1_560px]">
+        <Card className="min-w-0 flex-[3_1_610px]">
           <DataTable
+            compact
             columns={columns}
             rows={admins ?? []}
             loading={loading && !admins}
@@ -112,9 +113,9 @@ export default function AdminsPage({ page }) {
             onDelete={() => setDeleting(true)}
           />
         ) : (
-          <Card className="min-w-0 flex-[2_1_340px]">
+          <Card className="min-w-0 flex-[2_1_390px]">
             <EmptyState
-              icon={Pencil}
+              icon={PenLine}
               title="Admin tanlanmagan"
               description="Tahrirlash uchun jadvaldagi qalam tugmasini bosing."
             />

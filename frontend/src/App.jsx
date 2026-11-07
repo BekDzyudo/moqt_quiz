@@ -1,4 +1,4 @@
-import { CircleAlert, Loader2, RefreshCw } from 'lucide-react'
+import { CircleAlert, Loader2, RotateCw } from 'lucide-react'
 import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Button from './components/ui/Button.jsx'
@@ -43,7 +43,7 @@ export default function App() {
           title="Sahifani ochib bo'lmadi"
           description={bootError}
           action={
-            <Button icon={RefreshCw} onClick={bootstrap}>
+            <Button icon={RotateCw} onClick={bootstrap}>
               Qayta urinish
             </Button>
           }
