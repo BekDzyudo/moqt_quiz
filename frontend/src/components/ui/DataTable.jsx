@@ -2,7 +2,7 @@ import { CircleAlert, Inbox, Loader2, RotateCw } from 'lucide-react'
 import Button from './Button.jsx'
 import EmptyState from './EmptyState.jsx'
 
-// columns: [{ key, header, render?(row), align?: 'right' }]
+// columns: [{ key, header, render?(row, index), align?: 'right', width? }]
 export default function DataTable({
   columns,
   rows = [],
@@ -48,6 +48,7 @@ export default function DataTable({
               <th
                 key={column.key}
                 scope="col"
+                style={column.width ? { width: column.width } : undefined}
                 className={`border-b border-border-200 px-3 py-2.5 font-semibold ${
                   column.align === 'right' ? 'text-right' : ''
                 }`}
@@ -58,14 +59,14 @@ export default function DataTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {rows.map((row, rowIndex) => (
             <tr key={rowKey(row)} className={`border-b border-border-200 last:border-b-0 ${rowClassName(row)}`}>
               {columns.map((column) => (
                 <td
                   key={column.key}
                   className={`px-3 ${compact ? 'py-3' : 'py-3.5'} ${column.align === 'right' ? 'text-right' : ''}`}
                 >
-                  {column.render ? column.render(row) : row[column.key]}
+                  {column.render ? column.render(row, rowIndex) : row[column.key]}
                 </td>
               ))}
             </tr>

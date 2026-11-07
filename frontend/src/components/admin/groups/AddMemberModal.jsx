@@ -1,4 +1,4 @@
-import { Check, UserPlus, X } from 'lucide-react'
+import { Check, Upload, UserPlus, X } from 'lucide-react'
 import { useState } from 'react'
 import { addMember } from '../../../api/groups.js'
 import { useFormErrors } from '../../../lib/useFormErrors.js'
@@ -9,7 +9,7 @@ import Modal from '../../ui/Modal.jsx'
 
 const EMPTY = { full_name: '', pinfl: '', organization: '' }
 
-export default function AddMemberModal({ group, onClose, onAdded }) {
+export default function AddMemberModal({ group, onClose, onAdded, onImport }) {
   const [values, setValues] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
   const [warning, setWarning] = useState(null)
@@ -76,6 +76,14 @@ export default function AddMemberModal({ group, onClose, onAdded }) {
           </Button>
           <Button type="submit" icon={UserPlus} loading={saving}>
             Qo'shish
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface-muted p-3">
+          <span className="text-[13px] leading-[19px] text-ink-600">
+            Tinglovchilar ko'p bo'lsa, ro'yxatni Excel bilan yuklang.
+          </span>
+          <Button variant="secondary" size="xs" icon={Upload} onClick={onImport}>
+            Excel import
           </Button>
         </div>
       </form>

@@ -123,7 +123,12 @@ export async function buildCredentialsExcel(cards) {
   return Buffer.from(await workbook.xlsx.writeBuffer())
 }
 
-export async function buildMembersTemplate(rows = [['Karimova Dilnoza Rustamovna', '30101900000017', 'Toshkent MOM']]) {
+const MEMBER_SAMPLES = [
+  ['Karimova Dilnoza Rustamovna', '30101900000017', 'Toshkent MOM'],
+  ['Abdullayev Jasur Baxtiyorovich', '30101900000024', ''],
+]
+
+export async function buildMembersTemplate(rows = MEMBER_SAMPLES) {
   const workbook = new ExcelJS.Workbook()
   const sheet = workbook.addWorksheet('Tinglovchilar')
   sheet.columns = [

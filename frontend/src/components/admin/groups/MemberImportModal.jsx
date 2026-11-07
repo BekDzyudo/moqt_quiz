@@ -28,6 +28,25 @@ const PROBLEM_COLUMNS = [
   },
 ]
 
+const SAMPLE_COLUMNS = [
+  { key: 'full_name', header: 'F.I.Sh.' },
+  {
+    key: 'pinfl',
+    header: 'PINFL',
+    render: (row) => <span className="font-mono text-[13px]">{row.pinfl}</span>,
+  },
+  {
+    key: 'organization',
+    header: 'Tashkilot',
+    render: (row) => row.organization || <span className="text-ink-400">Bo'sh</span>,
+  },
+]
+
+const SAMPLE_ROWS = [
+  { id: 1, full_name: 'Karimova Dilnoza Rustamovna', pinfl: '30101900000017', organization: 'Toshkent MOM' },
+  { id: 2, full_name: 'Abdullayev Jasur Baxtiyorovich', pinfl: '30101900000024', organization: '' },
+]
+
 function SelectStep({ groupId, onPreview, onClose }) {
   const [file, setFile] = useState(null)
   const [checking, setChecking] = useState(false)
@@ -76,14 +95,21 @@ function SelectStep({ groupId, onPreview, onClose }) {
         {errors.fields.file && <Alert tone="error">{errors.fields.file}</Alert>}
       </div>
 
-      <div className="flex flex-col items-start gap-2 rounded-xl bg-surface-muted p-4 text-[13px] leading-[19px] text-ink-600">
-        <p className="m-0">
-          Ustunlar: F.I.Sh., PINFL, Tashkilot. Tashkilot bo'sh bo'lsa, guruh tashkiloti yoziladi.
-        </p>
-        <Button variant="secondary" size="xs" icon={FileDown} onClick={handleTemplate}>
-          Shablonni yuklab olish
-        </Button>
-      </div>
+      <section className="flex flex-col gap-3 rounded-xl border border-border-200 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="m-0 text-[15px] font-semibold">Excel fayl namunasi</h3>
+          <Button variant="secondary" size="xs" icon={FileDown} onClick={handleTemplate}>
+            Shablonni yuklab olish
+          </Button>
+        </div>
+        <DataTable compact columns={SAMPLE_COLUMNS} rows={SAMPLE_ROWS} minWidth={520} />
+        <ul className="m-0 flex list-disc flex-col gap-1 pl-5 text-[13px] text-ink-600">
+          <li className="leading-[19px]">Birinchi qator sarlavha, ro'yxat ikkinchi qatordan boshlanadi.</li>
+          <li className="leading-[19px]">PINFL 14 ta raqamdan iborat.</li>
+          <li className="leading-[19px]">Tashkilot bo'sh bo'lsa, guruh tashkiloti yoziladi.</li>
+          <li className="leading-[19px]">Shablondagi namuna qatorlarni o'chirib, o'z ro'yxatingizni kiriting.</li>
+        </ul>
+      </section>
 
       {templateError && <Alert tone="error">{templateError}</Alert>}
       {errors.form && <Alert tone="error">{errors.form}</Alert>}
