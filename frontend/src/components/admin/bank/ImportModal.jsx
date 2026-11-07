@@ -32,6 +32,28 @@ const PROBLEM_COLUMNS = [
   },
 ]
 
+const SAMPLE_COLUMNS = [
+  { key: 'text', header: 'savol' },
+  { key: 'a', header: 'A' },
+  { key: 'b', header: 'B' },
+  { key: 'c', header: 'C' },
+  { key: 'd', header: 'D' },
+  { key: 'correct', header: "to'g'ri (A/B/C/D)" },
+]
+
+const SAMPLE_ROWS = [
+  {
+    id: 1,
+    text: "Kompyuter tarmog'ida IP-manzilni avtomatik taqsimlovchi protokol qaysi?",
+    a: 'DNS',
+    b: 'DHCP',
+    c: 'FTP',
+    d: 'SMTP',
+    correct: 'B',
+  },
+  { id: 2, text: "OSI modelida nechta pog'ona bor?", a: '4', b: '5', c: '6', d: '7', correct: 'D' },
+]
+
 function SelectStep({ sets, defaultSet, onPreview, onClose }) {
   const [setId, setSetId] = useState(defaultSet ?? '')
   const [file, setFile] = useState(null)
@@ -99,20 +121,28 @@ function SelectStep({ sets, defaultSet, onPreview, onClose }) {
         {errors.fields.file && <Alert tone="error">{errors.fields.file}</Alert>}
       </div>
 
-      <div className="flex flex-col gap-2 rounded-xl bg-surface-muted p-4 text-[13px] leading-[19px] text-ink-600">
-        <p className="m-0">
-          Excel: savol, A, B, C, D, to'g'ri javob ustunlari. Word: raqamlangan savol, keyin A)…D)
-          qatorlar, to'g'ri variant oldida * yoki qalin.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('xlsx')}>
-            Excel shablon
-          </Button>
-          <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('docx')}>
-            Word shablon
-          </Button>
+      <section className="flex flex-col gap-3 rounded-xl border border-border-200 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="m-0 text-[15px] font-semibold">Excel fayl namunasi</h3>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('xlsx')}>
+              Excel shablon
+            </Button>
+            <Button variant="secondary" size="xs" icon={FileDown} onClick={() => handleDownload('docx')}>
+              Word shablon
+            </Button>
+          </div>
         </div>
-      </div>
+        <DataTable compact columns={SAMPLE_COLUMNS} rows={SAMPLE_ROWS} minWidth={640} />
+        <ul className="m-0 flex list-disc flex-col gap-1 pl-5 text-[13px] text-ink-600">
+          <li className="leading-[19px]">Birinchi qator sarlavha, savollar ikkinchi qatordan boshlanadi.</li>
+          <li className="leading-[19px]">Oxirgi ustunda to'g'ri javob harfi: A, B, C yoki D.</li>
+          <li className="leading-[19px]">
+            Word faylda: raqamlangan savol, keyin A)…D) qatorlar, to'g'ri variant oldida * yoki qalin.
+          </li>
+          <li className="leading-[19px]">Shablondagi namuna savollarni o'chirib, o'z savollaringizni kiriting.</li>
+        </ul>
+      </section>
 
       {templateError && <Alert tone="error">{templateError}</Alert>}
       {errors.form && <Alert tone="error">{errors.form}</Alert>}
