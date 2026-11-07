@@ -1,10 +1,19 @@
 import { buildOptions, updateOptions } from '../bank-seed.js'
+import { randomBytes } from 'node:crypto'
 import { ApiError, FileResponse, notFound, readJson, readMultipart, Reply, validationError } from '../http.js'
 import { dummySource } from '../sources/dummy.js'
 
 const PAGE_SIZE = 20
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024
-const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
+
+// Klient aytgan MIME'ga ishonilmaydi: fayl boshidagi imzo tekshiriladi.
+function imageTypeOf(buffer) {
+  if (buffer.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) return 'image/png'
+  if (buffer.subarray(0, 3).equals(Buffer.from('ffd8ff', 'hex'))) return 'image/jpeg'
+  const isRiff = buffer.subarray(0, 4).toString('latin1') === 'RIFF'
+  if (isRiff && buffer.subarray(8, 12).toString('latin1') === 'WEBP') return 'image/webp'
+  return null
+}
 
 const text = (value) => (typeof value === 'string' ? value.trim() : '')
 const shorten = (value) => (value.length > 60 ? `${value.slice(0, 57)}...` : value)
@@ -49,7 +58,7 @@ export function bankRoutes(state) {
   })
 
   const imageUrl = (question) =>
-    question.image ? `/api/v1/media/questions/${question.id}?v=${question.image.version}` : null
+    question.image ? `/api/v1/media/questions/${question.image.key}` : null
 
   const presentRow = (question) => ({
     id: question.id,
@@ -323,18 +332,19 @@ export function bankRoutes(state) {
       const form = await readMultipart(req)
       const file = form.get('image')
 
-      if (!(file instanceof File) || !IMAGE_TYPES.includes(file.type)) {
+      if (!(file instanceof File)) {
         throw validationError({ image: 'PNG, JPG yoki WEBP rasm tanlang.' })
       }
       if (file.size > MAX_IMAGE_BYTES) {
         throw validationError({ image: 'Rasm juda katta: 2 MB gacha rasm yuklang.' })
       }
 
-      question.image = {
-        buffer: Buffer.from(await file.arrayBuffer()),
-        contentType: file.type,
-        version: (question.image?.version ?? 0) + 1,
-      }
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const contentType = imageTypeOf(buffer)
+      if (!contentType) throw validationError({ image: 'PNG, JPG yoki WEBP rasm tanlang.' })
+
+      // Tasodifiy kalit: savol ID'si bilan rasmlarni terib ochib bo'lmaydi.
+      question.image = { buffer, contentType, key: randomBytes(16).toString('hex') }
       return { image_url: imageUrl(question) }
     },
 
@@ -344,9 +354,9 @@ export function bankRoutes(state) {
       return new Reply(204)
     },
 
-    // <img> sarlavha yubora olmaydi, shuning uchun rasm tokensiz beriladi.
-    'GET /media/questions/:id': async (req) => {
-      const { image } = findQuestion(req.params.id)
+    // <img> sarlavha yubora olmaydi, shuning uchun rasm tokensiz, tasodifiy kalit bilan beriladi.
+    'GET /media/questions/:key': async (req) => {
+      const image = bank.questions.find((question) => question.image?.key === req.params.key)?.image
       if (!image) throw notFound('Rasm topilmadi.')
       return new FileResponse({
         buffer: image.buffer,

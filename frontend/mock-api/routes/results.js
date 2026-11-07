@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs'
+import { safeCell, safeRow } from '../excel-safe.js'
 import { FileResponse, notFound, validationError } from '../http.js'
 import { buildProtocolPdf } from '../protocol-pdf.js'
 
@@ -156,7 +157,7 @@ export function resultRoutes(state) {
       for (const member of members) {
         const { user, attempt } = member
         const finished = isFinished(member)
-        sheet.addRow({
+        const row = {
           full_name: user.full_name,
           pinfl: user.pinfl,
           organization: user.organization,
@@ -176,7 +177,8 @@ export function resultRoutes(state) {
           suspicious: attempt?.suspicious ? 'Ha' : "Yo'q",
           reasons: attempt?.suspicious_reasons.map((reason) => reason.detail).join('; ') ?? '',
           retake: attempt?.retake_reason ?? '',
-        })
+        }
+        sheet.addRow(safeRow(row))
       }
 
       const timing = workbook.addWorksheet("Savollar bo'yicha vaqt")
@@ -192,7 +194,7 @@ export function resultRoutes(state) {
       timing.getRow(1).font = { bold: true }
 
       for (const { user, attempt } of members.filter(isFinished)) {
-        const row = { full_name: user.full_name }
+        const row = { full_name: safeCell(user.full_name) }
         for (const slot of attempt.questions) row[`q${slot.n}`] = Math.round(slot.time_spent_ms / 1000)
         timing.addRow(row)
       }

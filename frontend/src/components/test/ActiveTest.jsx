@@ -7,7 +7,7 @@ import Button from '../ui/Button.jsx'
 import EmptyState from '../ui/EmptyState.jsx'
 import ExitKeyModal from './ExitKeyModal.jsx'
 import FinishModal from './FinishModal.jsx'
-import { enterFullscreen, leaveFullscreen, useTestGuards } from './guards.js'
+import { enterFullscreen, isInTestView, leaveFullscreen, useTestGuards } from './guards.js'
 import QuestionNavigator from './QuestionNavigator.jsx'
 import QuestionPanel from './QuestionPanel.jsx'
 import ReturnOverlay from './ReturnOverlay.jsx'
@@ -77,7 +77,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
   const question = useAttemptStore((state) => state.question)
 
   // Sahifa yangilangandan keyin ham to'liq ekran yo'q: avval qaytish tugmasi bosiladi.
-  const [locked, setLocked] = useState(() => !document.fullscreenElement)
+  const [locked, setLocked] = useState(() => !isInTestView())
   const [returnError, setReturnError] = useState(null)
   const [dialog, setDialog] = useState(null)
   // Mas'ul shaxs paroli bilan chiqarilgan: to'liq ekran talab qilinmaydi, test davom etadi.
@@ -89,7 +89,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
 
   useEffect(() => {
     open(attemptId)
-    if (!document.fullscreenElement) useAttemptStore.getState().report('reconnect')
+    if (!isInTestView()) useAttemptStore.getState().report('reconnect')
     return close
   }, [attemptId, open, close])
 
@@ -149,7 +149,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
   const handleReturn = async () => {
     setReturnError(null)
     try {
-      if (!document.fullscreenElement) await enterFullscreen()
+      if (!isInTestView()) await enterFullscreen()
       releasedRef.current = false
       setReleased(false)
       setLocked(false)

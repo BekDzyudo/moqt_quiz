@@ -131,13 +131,13 @@ export default function GroupDetailPage({ page }) {
   }
 
   const handleOpenTest = async () => {
-    await openGroupTest(id)
+    await openGroupTest(group.id)
     closeDialog()
     reloadAll()
   }
 
   const handleRegenerateMember = async () => {
-    const result = await generateCredentials(id, [selectedMember.id])
+    const result = await generateCredentials(group.id, [selectedMember.id])
     closeDialog()
     setCredentials(result)
     reloadAll()

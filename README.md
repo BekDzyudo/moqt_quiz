@@ -37,6 +37,15 @@ Birinchi guruhning (`2026-11-AKT-01`) chiqish paroli: `Chiqish1`.
 Mock holati xotirada saqlanadi: dev server qayta ishga tushsa yoki
 `mock-api/` dagi fayl o'zgarsa, boshlang'ich holatga qaytadi.
 
+## Hujjatlar
+
+| Fayl | Mazmuni |
+|---|---|
+| [docs/ADMIN_QOLLANMA.md](docs/ADMIN_QOLLANMA.md) | Admin uchun qo'llanma |
+| [docs/SEB.md](docs/SEB.md) | Safe Exam Browser bilan ishlash |
+| [docs/XAVFSIZLIK.md](docs/XAVFSIZLIK.md) | Xavfsizlik ko'rigi va Django uchun talablar |
+| [docs/API_QOSHIMCHALAR.md](docs/API_QOSHIMCHALAR.md) | `CLAUDE.md` kontraktiga qo'shilgan API |
+
 ## Buyruqlar (`frontend/` ichida)
 
 | Buyruq | Vazifasi |

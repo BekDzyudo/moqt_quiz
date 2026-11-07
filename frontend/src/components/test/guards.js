@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 
+// Safe Exam Browser o'zi kiosk rejimida ishlaydi va sahifaning so'rovini rad etishi mumkin.
+// Soxta User-Agent to'liq ekranni chetlab o'tsa ham, blur va hidden hodisalari qayd etiladi.
+const isKioskBrowser = () => /\bSEB\//.test(navigator.userAgent)
+
+export const isInTestView = () => isKioskBrowser() || Boolean(document.fullscreenElement)
+
 export async function enterFullscreen() {
+  if (isKioskBrowser()) return
   await document.documentElement.requestFullscreen()
   // Chromium'da Esc'ni 2 soniya bosib turmasa to'liq ekrandan chiqilmaydi.
   await navigator.keyboard?.lock?.(['Escape']).catch(() => {})
@@ -24,7 +31,7 @@ export function useTestGuards({ onViolation, onExitKey }) {
 
   useEffect(() => {
     const handleFullscreen = () => {
-      if (!document.fullscreenElement) handlers.current.onViolation('fullscreen_exit')
+      if (!isInTestView()) handlers.current.onViolation('fullscreen_exit')
     }
     const handleVisibility = () => {
       if (document.visibilityState === 'hidden') handlers.current.onViolation('hidden')

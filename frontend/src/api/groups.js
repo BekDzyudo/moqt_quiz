@@ -18,10 +18,12 @@ export function useGroups({ q, status }) {
 }
 
 export const useGroup = (id) =>
-  useRequest(useCallback(() => api.get(`/groups/${id}/`).then(data), [id]))
+  useRequest(useCallback(() => api.get(`/groups/${encodeURIComponent(id)}/`).then(data), [id]))
 
 export const useGroupMembers = (id) =>
-  useRequest(useCallback(() => api.get(`/groups/${id}/members/`).then(data), [id]))
+  useRequest(
+    useCallback(() => api.get(`/groups/${encodeURIComponent(id)}/members/`).then(data), [id]),
+  )
 
 export const createGroup = (fields) => api.post('/groups/', fields).then(data)
 export const updateGroup = (id, fields) => api.patch(`/groups/${id}/`, fields).then(data)

@@ -46,8 +46,10 @@ async function listeners(admin, count, groupId = 1) {
 
 const start = (token) => call('POST', '/me/test/start/', { token, body: {} })
 const question = (token, id, n) => call('GET', `/attempts/${id}/questions/${n}/`, { token })
-const answer = (token, id, n, key, ms = 20000) =>
-  call('PUT', `/attempts/${id}/answers/${n}/`, { token, body: { key, time_spent_ms: ms } })
+const answer = (token, id, n, key, ms = 20000) => {
+  context.clock += ms
+  return call('PUT', `/attempts/${id}/answers/${n}/`, { token, body: { key, time_spent_ms: ms } })
+}
 const finish = (token, id) => call('POST', `/attempts/${id}/finish/`, { token, body: {} })
 const result = (token, id) => call('GET', `/attempts/${id}/result/`, { token })
 
@@ -168,7 +170,7 @@ describe('1-2 qoida: javob va ID oshkor emas', () => {
     const ids = (await call('GET', `/questions/?set=${set.id}`, { token: admin })).data.results
     for (const { id } of ids) {
       const form = new FormData()
-      form.append('image', new File([Buffer.from('rasm')], 'a.png', { type: 'image/png' }))
+      form.append('image', new File([Buffer.from('89504e470d0a1a0a00', 'hex')], 'a.png', { type: 'image/png' }))
       await fetch(`${context.baseUrl}/questions/${id}/image/`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${admin}` },
@@ -460,7 +462,7 @@ describe('7-qoida: vaqt tugashi', () => {
     const { data: q } = await question(token, attempt.id, 1)
 
     context.clock += 20 * MINUTE + (SETTINGS.ANSWER_GRACE_SECONDS - 1) * 1000
-    assert.equal((await answer(token, attempt.id, 1, q.options[0].key)).status, 200)
+    assert.equal((await answer(token, attempt.id, 1, q.options[0].key, 0)).status, 200)
   })
 
   it('beat tinglovchi so\'rovisiz yakunlaydi', async () => {
@@ -527,7 +529,7 @@ describe('9-qoida: baholash serverda', () => {
       n_total: 12,
       percent: 50,
       passed: true,
-      duration_seconds: 300,
+      duration_seconds: 440,
     })
   })
 
@@ -590,6 +592,7 @@ describe('javob saqlash', () => {
 
     await answer(token, attempt.id, 1, q.options[0].key, 8000)
     await answer(token, attempt.id, 1, q.options[0].key, 8000)
+    context.clock += 3000
     const slot = storedAttempt(attempt.id).questions[0]
     assert.equal(slot.time_spent_ms, 8000)
 

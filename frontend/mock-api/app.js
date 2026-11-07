@@ -19,7 +19,7 @@ function compileRoutes(table) {
     const source = path
       .replace(/[.]/g, '\\.')
       .replace(/:(\w+)/g, '(?<$1>[^/]+)')
-    return { method, pattern: new RegExp(`^${source}$`), handler }
+    return { key, method, path, pattern: new RegExp(`^${source}$`), handler }
   })
 }
 
@@ -73,6 +73,10 @@ export function createMockApi({ now = Date.now, latencyMs = 0, seedDemo = false 
   const handler = async (req, res) => {
     const url = new URL(req.url, 'http://mock')
 
+    // Javoblarda ochiq parol bo'lishi mumkin: brauzer va proksi saqlab qolmasin.
+    res.setHeader('Cache-Control', 'no-store')
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+
     if (latencyMs) await new Promise((resolve) => setTimeout(resolve, latencyMs))
 
     try {
@@ -100,5 +104,6 @@ export function createMockApi({ now = Date.now, latencyMs = 0, seedDemo = false 
     auditLog: state.auditLog,
     users: state.users,
     engine: state.engine,
+    routes,
   })
 }

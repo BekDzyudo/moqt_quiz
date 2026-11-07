@@ -128,7 +128,10 @@ export function attemptRoutes(state) {
       if (selected !== slot.selected_option) {
         slot.selected_option = selected
         slot.answered_at = selected === null ? null : now()
-        if (Number.isFinite(timeSpent) && timeSpent > 0) slot.time_spent_ms += timeSpent
+        if (Number.isFinite(timeSpent) && timeSpent > 0) {
+          // Klient aytgan vaqt testning o'tgan vaqtidan oshmaydi: tez javob belgisi aylanib o'tilmaydi.
+          slot.time_spent_ms += Math.min(timeSpent, now() - attempt.timing.started_at)
+        }
       }
 
       return { n: slot.n, selected_key: keyOf(slot), ...clock(attempt) }

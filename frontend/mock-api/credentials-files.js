@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs'
 import PDFDocument from 'pdfkit'
+import { safeRow } from './excel-safe.js'
 
 const SEAL_NAVY = '#283770'
 const INK = '#10202e'
@@ -118,7 +119,7 @@ export async function buildCredentialsExcel(cards) {
     { header: 'Parol', key: 'password', width: 12 },
   ]
   sheet.getRow(1).font = { bold: true }
-  sheet.addRows(cards)
+  sheet.addRows(cards.map(safeRow))
   return Buffer.from(await workbook.xlsx.writeBuffer())
 }
 

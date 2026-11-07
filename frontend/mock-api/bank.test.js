@@ -331,7 +331,8 @@ describe('Word import', () => {
 describe('rasm', () => {
   it('yuklanadi, tokensiz ochiladi, turi va hajmi tekshiriladi', async () => {
     const token = await adminToken()
-    const png = new File([Buffer.from('rasm')], 'a.png', { type: 'image/png' })
+    const signature = Buffer.from('89504e470d0a1a0a00', 'hex')
+    const png = new File([signature], 'a.png', { type: 'image/png' })
     const { status, data } = await upload(token, '/questions/1/image/', { image: png })
     assert.equal(status, 200)
 
@@ -341,7 +342,7 @@ describe('rasm', () => {
     const pdf = new File([Buffer.from('x')], 'a.pdf', { type: 'application/pdf' })
     assert.ok((await upload(token, '/questions/1/image/', { image: pdf })).data.fields.image)
 
-    const big = new File([Buffer.alloc(2 * 1024 * 1024 + 1)], 'b.png', { type: 'image/png' })
+    const big = new File([signature, Buffer.alloc(2 * 1024 * 1024)], 'b.png', { type: 'image/png' })
     assert.ok((await upload(token, '/questions/1/image/', { image: big })).data.fields.image)
   })
 })

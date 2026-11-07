@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs'
+import { safeRow } from '../excel-safe.js'
 import { FileResponse } from '../http.js'
 
 const PAGE_SIZE = 20
@@ -100,13 +101,15 @@ export function auditRoutes(state) {
       sheet.getRow(1).font = { bold: true }
 
       for (const entry of filteredEntries(req.query)) {
-        sheet.addRow({
-          at: tashkentStampFormat.format(new Date(entry.at)),
-          actor: entry.actor_label,
-          action: ACTION_LABELS[entry.action],
-          object: entry.object_repr,
-          ip: entry.ip,
-        })
+        sheet.addRow(
+          safeRow({
+            at: tashkentStampFormat.format(new Date(entry.at)),
+            actor: entry.actor_label,
+            action: ACTION_LABELS[entry.action],
+            object: entry.object_repr,
+            ip: entry.ip,
+          }),
+        )
       }
 
       return new FileResponse({
