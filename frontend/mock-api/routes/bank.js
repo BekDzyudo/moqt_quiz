@@ -1,4 +1,4 @@
-import { buildOptions } from '../bank-seed.js'
+import { buildOptions, updateOptions } from '../bank-seed.js'
 import { ApiError, FileResponse, notFound, readJson, readMultipart, Reply, validationError } from '../http.js'
 import { dummySource } from '../sources/dummy.js'
 
@@ -20,7 +20,7 @@ function optionsError(options) {
 }
 
 export function bankRoutes(state) {
-  const { audit, requireRole, bank } = state
+  const { audit, requireRole, bank, groups } = state
   const staff = (req) => requireRole(req, 'admin', 'superadmin')
 
   const findSet = (id) => {
@@ -45,8 +45,7 @@ export function bankRoutes(state) {
     pass_score: set.pass_score,
     active_count: bank.questions.filter((q) => q.question_set === set.id && q.is_active).length,
     total_count: bank.questions.filter((q) => q.question_set === set.id).length,
-    // 3-bosqichda guruhlar qo'shilganda to'ladi.
-    groups: [],
+    groups: groups.filter((group) => group.question_set === set.id).map((group) => group.name),
   })
 
   const imageUrl = (question) =>
@@ -158,6 +157,13 @@ export function bankRoutes(state) {
           "To'plamda savollar bor. Avval savollarni o'chiring yoki boshqa to'plamga o'tkazing.",
         )
       }
+      if (groups.some((group) => group.question_set === set.id)) {
+        throw new ApiError(
+          409,
+          'set_in_use',
+          "To'plam guruhga biriktirilgan. Avval guruhga boshqa to'plam tanlang.",
+        )
+      }
       bank.sets.splice(bank.sets.indexOf(set), 1)
       audit(req, 'question_set_deleted', actor, { type: 'question_set', repr: set.name })
       return new Reply(204)
@@ -171,15 +177,14 @@ export function bankRoutes(state) {
 
       for (const dto of dummySource.fetch(set)) {
         const existing = bank.questions.find((q) => q.external_id === dto.external_id)
-        const options = buildOptions(
-          dto.options.map((option) => option.text),
-          dto.options.findIndex((option) => option.is_correct),
-          bank.nextOptionId,
-        )
+        const texts = dto.options.map((option) => option.text)
+        const correct = dto.options.findIndex((option) => option.is_correct)
 
         if (existing) {
           existing.text = dto.text
-          existing.options = options
+          // Testda ishlatilgan savolda API ham to'g'ri javobni almashtirmaydi.
+          const keptCorrect = existing.options.findIndex((option) => option.is_correct)
+          updateOptions(existing, texts, existing.in_use ? keptCorrect : correct)
           updated += 1
         } else {
           bank.questions.push({
@@ -191,7 +196,7 @@ export function bankRoutes(state) {
             external_id: dto.external_id,
             is_active: true,
             in_use: false,
-            options,
+            options: buildOptions(texts, correct, bank.nextOptionId),
           })
           created += 1
         }
@@ -275,14 +280,22 @@ export function bankRoutes(state) {
       }
       throwIfInvalid(questionErrors(merged))
 
+      const correctIndex = merged.options.findIndex((option) => option.is_correct)
+      const currentCorrect = question.options.findIndex((option) => option.is_correct)
+      if (question.in_use && correctIndex !== currentCorrect) {
+        throw validationError({
+          options: "Bu savol testda ishlatilgan: to'g'ri javobni o'zgartirib bo'lmaydi.",
+        })
+      }
+
       question.question_set = merged.question_set
       question.text = text(merged.text)
       if (typeof body.is_active === 'boolean') question.is_active = body.is_active
       if (body.options) {
-        question.options = buildOptions(
+        updateOptions(
+          question,
           merged.options.map((option) => text(option.text)),
-          merged.options.findIndex((option) => option.is_correct),
-          bank.nextOptionId,
+          correctIndex,
         )
       }
       audit(req, 'question_updated', actor, { type: 'question', repr: shorten(question.text) })

@@ -23,7 +23,7 @@ const FORM_ID = 'question-form'
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024
 const EMPTY_OPTIONS = LETTERS.map(() => ({ text: '', is_correct: false }))
 
-function OptionRow({ letter, option, onText, onSelect }) {
+function OptionRow({ letter, option, correctLocked, onText, onSelect }) {
   const correct = option.is_correct
 
   return (
@@ -36,6 +36,7 @@ function OptionRow({ letter, option, onText, onSelect }) {
         type="radio"
         name="correct-option"
         checked={correct}
+        disabled={correctLocked}
         onChange={onSelect}
         aria-label={`${letter} variant to'g'ri javob`}
         className={`size-5 shrink-0 ${correct ? 'accent-success' : 'accent-brand-700'}`}
@@ -236,6 +237,7 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
               key={LETTERS[index]}
               letter={LETTERS[index]}
               option={option}
+              correctLocked={inUse}
               onText={(value) => setOption(index, { text: value })}
               onSelect={() => markCorrect(index)}
             />
@@ -255,8 +257,8 @@ function QuestionForm({ question, sets, defaultSet, onClose, onSaved }) {
 
         {inUse && (
           <Alert tone="info">
-            Bu savol testda ishlatilgan, uni o'chirib bo'lmaydi. Testlarga tushmasligi uchun nofaol
-            qiling.
+            Bu savol testda ishlatilgan: uni o'chirib va to'g'ri javobini o'zgartirib bo'lmaydi.
+            Testlarga tushmasligi uchun nofaol qiling.
           </Alert>
         )}
         {errors.form && <Alert tone="error">{errors.form}</Alert>}

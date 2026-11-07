@@ -1,11 +1,19 @@
 import { accountBlocked, forbidden, sessionReplaced, unauthorized } from './http.js'
 import { createBank } from './bank-seed.js'
+import { createEngine } from './testing/engine.js'
+import { createGroups } from './groups-seed.js'
+import { hashPassword } from './passwords.js'
 import { createToken, verifyToken } from './tokens.js'
 
 const ACCESS_TTL_SECONDS = 30 * 60
 const REFRESH_TTL_SECONDS = 12 * 60 * 60
 
-const ACTOR_ROLES = { superadmin: 'superadmin', admin: 'admin', listener: 'tinglovchi' }
+const ACTOR_ROLES = {
+  superadmin: 'superadmin',
+  admin: 'admin',
+  listener: 'tinglovchi',
+  system: 'avtomatik',
+}
 
 // Faqat dev uchun namuna hisoblar. Ochiq parol shu mock'dan tashqariga chiqmaydi.
 const seedUsers = () =>
@@ -20,7 +28,7 @@ const seedUsers = () =>
   ].map(([username, password, full_name, role, organization, is_active = true], index) => ({
     id: index + 1,
     username,
-    password,
+    password_hash: hashPassword(password),
     full_name,
     role,
     organization,
@@ -30,10 +38,23 @@ const seedUsers = () =>
 
 export function createState({ now }) {
   const users = seedUsers()
-  const bank = createBank(users[0].id)
   const auditLog = []
   const revokedRefresh = new Set()
   let nextUserId = users.length + 1
+
+  const createUser = (fields) => {
+    const user = { id: nextUserId, session_version: 0, ...fields }
+    nextUserId += 1
+    users.push(user)
+    return user
+  }
+
+  const bank = createBank(users[0].id)
+  const groups = createGroups({
+    seedListener: users.find((user) => user.role === 'listener'),
+    createUser,
+    nowIso: () => new Date(now()).toISOString(),
+  })
 
   const actorLabel = (user) =>
     `${user.full_name.split(' ').slice(0, 2).join(' ')} (${ACTOR_ROLES[user.role]})`
@@ -86,10 +107,11 @@ export function createState({ now }) {
     )
   }
 
-  return {
+  const state = {
     now,
     users,
     bank,
+    groups,
     auditLog,
     revokedRefresh,
     issueTokens,
@@ -97,11 +119,8 @@ export function createState({ now }) {
     authenticate,
     requireRole,
     audit,
-    createUser(fields) {
-      const user = { id: nextUserId, session_version: 0, ...fields }
-      nextUserId += 1
-      users.push(user)
-      return user
-    },
+    createUser,
   }
+  state.engine = createEngine(state)
+  return state
 }

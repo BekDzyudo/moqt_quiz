@@ -5,6 +5,8 @@ import { ADMIN_PAGES, SUPERADMIN_PAGES } from '../../components/admin/navigation
 import { RequireRole } from '../../routes/guards.jsx'
 import AdminsPage from './AdminsPage.jsx'
 import AuditPage from './AuditPage.jsx'
+import GroupDetailPage from './GroupDetailPage.jsx'
+import GroupsPage from './GroupsPage.jsx'
 import PlaceholderPage from './PlaceholderPage.jsx'
 import QuestionSetsPage from './QuestionSetsPage.jsx'
 import QuestionsPage from './QuestionsPage.jsx'
@@ -14,6 +16,7 @@ const UiKitPage = import.meta.env.DEV ? lazy(() => import('./UiKitPage.jsx')) : 
 const SCREENS = {
   '/admin/savollar': QuestionsPage,
   '/admin/toplamlar': QuestionSetsPage,
+  '/admin/guruhlar': GroupsPage,
   '/admin/adminlar': AdminsPage,
   '/admin/jurnal': AuditPage,
 }
@@ -35,6 +38,10 @@ export default function AdminRoutes() {
     <Routes>
       <Route element={<AdminLayout />}>
         {ADMIN_PAGES.map(screenRoute)}
+        <Route
+          path="guruhlar/:id"
+          element={<GroupDetailPage page={ADMIN_PAGES.find((page) => page.to === '/admin/guruhlar')} />}
+        />
         <Route element={<RequireRole roles={['superadmin']} />}>
           {SUPERADMIN_PAGES.map(screenRoute)}
         </Route>

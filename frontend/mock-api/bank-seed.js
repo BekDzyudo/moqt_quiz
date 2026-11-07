@@ -20,6 +20,14 @@ export const buildOptions = (texts, correctIndex, nextOptionId) =>
     is_correct: index === correctIndex,
   }))
 
+// Variant ID'lari o'zgarmaydi: boshlangan urinishlar shu ID'lar bilan baholanadi.
+export function updateOptions(question, texts, correctIndex) {
+  question.options.forEach((option, index) => {
+    option.text = texts[index]
+    option.is_correct = index === correctIndex
+  })
+}
+
 export function createBank(createdBy) {
   let optionId = 0
   let questionId = 0

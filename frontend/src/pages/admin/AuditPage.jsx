@@ -26,6 +26,13 @@ const ACTION_TONES = {
   question_updated: 'warning',
   questions_imported: 'info',
   questions_synced: 'info',
+  credentials_generated: 'neutral',
+  members_imported: 'info',
+  exit_password_changed: 'warning',
+  test_opened: 'info',
+  test_closed: 'info',
+  test_open_failed: 'error',
+  retake_granted: 'warning',
   login: 'neutral',
   logout: 'neutral',
 }

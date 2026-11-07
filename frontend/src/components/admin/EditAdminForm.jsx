@@ -10,6 +10,8 @@ import PasswordField from './PasswordField.jsx'
 
 // Admin almashganda `key` orqali qayta yaratiladi, shuning uchun ichki holatni tozalash shart emas.
 export default function EditAdminForm({ admin, onSaved, onDelete }) {
+  const [fullName, setFullName] = useState(admin.full_name)
+  const [organization, setOrganization] = useState(admin.organization)
   const [username, setUsername] = useState(admin.username)
   const [password, setPassword] = useState('')
   const [isActive, setIsActive] = useState(admin.is_active)
@@ -30,6 +32,8 @@ export default function EditAdminForm({ admin, onSaved, onDelete }) {
     clearErrors()
     try {
       await updateAdmin(admin.id, {
+        full_name: fullName,
+        organization,
         username,
         is_active: isActive,
         ...(password ? { password } : {}),
@@ -56,6 +60,26 @@ export default function EditAdminForm({ admin, onSaved, onDelete }) {
         <h2 className="m-0 text-xl leading-7 font-bold">{admin.full_name}</h2>
       </div>
 
+      <Field
+        label="F.I.Sh."
+        autoComplete="off"
+        value={fullName}
+        onChange={(event) => {
+          setFullName(event.target.value)
+          clearField('full_name')
+        }}
+        error={errors.fields.full_name}
+      />
+      <Field
+        label="Tashkilot"
+        autoComplete="off"
+        value={organization}
+        onChange={(event) => {
+          setOrganization(event.target.value)
+          clearField('organization')
+        }}
+        error={errors.fields.organization}
+      />
       <Field
         label="Login"
         autoComplete="off"

@@ -40,6 +40,22 @@ export async function parseExcel(buffer) {
   return rows
 }
 
+// Excel PINFL'ni raqam qilib saqlashi mumkin: 14 xonali son aniqlikni yo'qotmaydi.
+export async function parseMembersExcel(buffer) {
+  const workbook = new ExcelJS.Workbook()
+  await workbook.xlsx.load(buffer)
+  const rows = []
+
+  workbook.worksheets[0].eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return
+    const [fullName, pinfl, organization] = [1, 2, 3].map((column) => cellText(row.getCell(column)))
+    if (!fullName && !pinfl && !organization) return
+    rows.push({ row: rowNumber, full_name: fullName, pinfl, organization })
+  })
+
+  return rows
+}
+
 const decodeXml = (value) =>
   value
     .replaceAll('&lt;', '<')

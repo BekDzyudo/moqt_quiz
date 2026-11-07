@@ -1,8 +1,10 @@
 import { ApiError, FileResponse, notFound, Reply } from './http.js'
 import { adminRoutes } from './routes/admins.js'
+import { attemptRoutes } from './routes/attempts.js'
 import { auditRoutes } from './routes/audit.js'
 import { authRoutes } from './routes/auth.js'
 import { bankRoutes } from './routes/bank.js'
+import { groupRoutes } from './routes/groups.js'
 import { importRoutes } from './routes/import.js'
 import { createState } from './state.js'
 
@@ -59,6 +61,8 @@ export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
     ...auditRoutes(state),
     ...bankRoutes(state),
     ...importRoutes(state),
+    ...groupRoutes(state),
+    ...attemptRoutes(state),
   })
 
   const handler = async (req, res) => {
@@ -79,5 +83,9 @@ export function createMockApi({ now = Date.now, latencyMs = 0 } = {}) {
     }
   }
 
-  return Object.assign(handler, { auditLog: state.auditLog })
+  return Object.assign(handler, {
+    auditLog: state.auditLog,
+    users: state.users,
+    engine: state.engine,
+  })
 }

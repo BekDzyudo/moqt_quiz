@@ -7,7 +7,7 @@ export function usernameError(username, users, currentUser = null) {
     return "Login 3–32 belgidan iborat bo'lsin: lotin harflari, raqamlar, nuqta, chiziqcha."
   }
   const taken = users.some(
-    (user) => user !== currentUser && user.username.toLowerCase() === username.toLowerCase(),
+    (user) => user !== currentUser && user.username?.toLowerCase() === username.toLowerCase(),
   )
   return taken ? 'Bu login band. Boshqa login kiriting.' : undefined
 }

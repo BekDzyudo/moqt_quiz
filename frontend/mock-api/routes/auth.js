@@ -1,4 +1,5 @@
 import { ApiError, readJson, unauthorized, validationError } from '../http.js'
+import { hashPassword, verifyPassword } from '../passwords.js'
 import { verifyToken } from '../tokens.js'
 import { passwordError } from '../validators.js'
 
@@ -37,7 +38,7 @@ export function authRoutes(state) {
       throttleLogin(req, login)
 
       const user = users.find((candidate) => candidate.username === login)
-      if (!user || user.password !== password || !user.is_active) {
+      if (!user || !verifyPassword(password, user.password_hash) || !user.is_active) {
         throw new ApiError(
           401,
           'invalid_credentials',
@@ -45,7 +46,11 @@ export function authRoutes(state) {
         )
       }
 
-      if (user.role === 'listener') user.session_version += 1
+      if (user.role === 'listener') {
+        user.session_version += 1
+        const attempt = state.engine.latestAttempt(user)
+        if (attempt?.status === 'active') state.engine.addEvent(attempt, 'new_session')
+      }
       audit(req, 'login', user, userObject(user))
       return { ...issueTokens(user), user: publicUser(user) }
     },
@@ -77,7 +82,7 @@ export function authRoutes(state) {
       const { current_password: currentPassword, new_password: newPassword } = await readJson(req)
 
       const fields = {}
-      if (currentPassword !== user.password) {
+      if (!verifyPassword(currentPassword, user.password_hash)) {
         fields.current_password = "Joriy parol to'g'ri kelmadi. Qayta kiriting."
       }
       const invalid = passwordError(newPassword)
@@ -87,7 +92,7 @@ export function authRoutes(state) {
       }
       if (Object.keys(fields).length > 0) throw validationError(fields)
 
-      user.password = newPassword
+      user.password_hash = hashPassword(newPassword)
       user.session_version += 1
       audit(req, 'password_changed', user, userObject(user))
       return issueTokens(user)

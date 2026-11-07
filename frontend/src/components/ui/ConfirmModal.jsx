@@ -6,7 +6,14 @@ import Button from './Button.jsx'
 import Modal from './Modal.jsx'
 
 // Qaytarib bo'lmaydigan amal uchun tasdiq. Modal faqat kerak bo'lganda render qilinadi.
-export default function ConfirmModal({ title, confirmLabel = "O'chirish", onConfirm, onClose, children }) {
+export default function ConfirmModal({
+  title,
+  confirmLabel = "O'chirish",
+  icon = Trash2,
+  onConfirm,
+  onClose,
+  children,
+}) {
   const [error, setError] = useState(null)
   const [working, setWorking] = useState(false)
 
@@ -31,7 +38,7 @@ export default function ConfirmModal({ title, confirmLabel = "O'chirish", onConf
           <Button variant="secondary" icon={X} onClick={onClose}>
             Bekor qilish
           </Button>
-          <Button variant="danger" icon={Trash2} loading={working} onClick={handleConfirm}>
+          <Button variant="danger" icon={icon} loading={working} onClick={handleConfirm}>
             {confirmLabel}
           </Button>
         </div>

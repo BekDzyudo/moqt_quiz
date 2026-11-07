@@ -1,4 +1,5 @@
 import { notFound, readJson, Reply, validationError } from '../http.js'
+import { hashPassword } from '../passwords.js'
 import { passwordError, usernameError } from '../validators.js'
 
 // Parol va session_version bu javobga hech qachon kirmaydi.
@@ -48,7 +49,7 @@ export function adminRoutes(state) {
 
       const admin = state.createUser({
         username,
-        password: body.password,
+        password_hash: hashPassword(body.password),
         full_name: fullName,
         organization,
         role: 'admin',
@@ -63,21 +64,30 @@ export function adminRoutes(state) {
       const admin = findAdmin(req.params.id)
       const body = await readJson(req)
       const username = body.username === undefined ? admin.username : text(body.username)
+      const fullName = body.full_name === undefined ? admin.full_name : text(body.full_name)
+      const organization =
+        body.organization === undefined ? admin.organization : text(body.organization)
 
       const fields = {
+        full_name: fullName ? undefined : 'F.I.Sh. ni kiriting.',
+        organization: organization ? undefined : 'Tashkilotni kiriting.',
         username: usernameError(username, users, admin),
         password: body.password === undefined ? undefined : passwordError(body.password),
       }
       if (Object.values(fields).some(Boolean)) throw validationError(fields)
 
-      if (username !== admin.username) {
-        const previous = admin.username
-        admin.username = username
-        audit(req, 'admin_updated', actor, adminObject(admin), { previous_username: previous })
+      const previous = { username: admin.username, full_name: admin.full_name, organization: admin.organization }
+      const changed = Object.entries({ username, full_name: fullName, organization }).filter(
+        ([key, value]) => value !== previous[key],
+      )
+      if (changed.length > 0) {
+        Object.assign(admin, Object.fromEntries(changed))
+        const before = Object.fromEntries(changed.map(([key]) => [key, previous[key]]))
+        audit(req, 'admin_updated', actor, adminObject(admin), { previous: before })
       }
 
       if (body.password !== undefined) {
-        admin.password = body.password
+        admin.password_hash = hashPassword(body.password)
         admin.session_version += 1
         audit(req, 'admin_password_changed', actor, adminObject(admin))
       }

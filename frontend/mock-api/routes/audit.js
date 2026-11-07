@@ -8,7 +8,7 @@ export const ACTION_LABELS = {
   logout: 'Tizimdan chiqdi',
   password_changed: "O'z parolini o'zgartirdi",
   admin_created: "Admin qo'shildi",
-  admin_updated: "Admin logini o'zgartirildi",
+  admin_updated: "Admin ma'lumotlari o'zgartirildi",
   admin_password_changed: "Admin paroli o'zgartirildi",
   admin_blocked: 'Admin bloklandi',
   admin_unblocked: 'Admin blokdan chiqarildi',
@@ -21,6 +21,16 @@ export const ACTION_LABELS = {
   question_deleted: "Savol o'chirildi",
   questions_imported: 'Savollar import qilindi',
   questions_synced: 'Savollar API orqali yangilandi',
+  group_created: 'Guruh yaratildi',
+  group_updated: "Guruh o'zgartirildi",
+  member_added: "Tinglovchi qo'shildi",
+  members_imported: 'Tinglovchilar import qilindi',
+  credentials_generated: 'Login-parol generatsiya',
+  exit_password_changed: "Chiqish paroli o'zgartirildi",
+  test_opened: 'Test ochildi',
+  test_closed: 'Test yopildi',
+  test_open_failed: 'Test ochilmadi',
+  retake_granted: 'Qayta topshirishga ruxsat',
 }
 
 const tashkentDateFormat = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tashkent' })

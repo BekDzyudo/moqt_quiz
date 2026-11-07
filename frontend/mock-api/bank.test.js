@@ -123,6 +123,34 @@ describe("savolni o'chirish", () => {
   })
 })
 
+describe("ishlatilgan savolda to'g'ri javob", () => {
+  it("o'zgartirib bo'lmaydi, matnni tuzatish mumkin", async () => {
+    const token = await adminToken()
+    const { data: question } = await call('GET', '/questions/1/', { token })
+    const moved = question.options.map((option, index) => ({
+      text: option.text,
+      is_correct: index === (question.options.findIndex((o) => o.is_correct) + 1) % 4,
+    }))
+
+    const rejected = await call('PATCH', '/questions/1/', { token, body: { options: moved } })
+    assert.equal(rejected.status, 400)
+    assert.match(rejected.data.fields.options, /to'g'ri javobni o'zgartirib bo'lmaydi/)
+
+    const typoFixed = question.options.map((option) => ({ ...option, text: `${option.text}!` }))
+    assert.equal((await call('PATCH', '/questions/1/', { token, body: { options: typoFixed } })).status, 200)
+  })
+
+  it('ishlatilmagan savolda erkin', async () => {
+    const token = await adminToken()
+    const { data: question } = await call('GET', '/questions/10/', { token })
+    const moved = question.options.map((option) => ({ text: option.text, is_correct: !option.is_correct }))
+    moved.forEach((option, index) => {
+      option.is_correct = index === (question.options.findIndex((o) => o.is_correct) + 1) % 4
+    })
+    assert.equal((await call('PATCH', '/questions/10/', { token, body: { options: moved } })).status, 200)
+  })
+})
+
 describe("ro'yxat", () => {
   it('filtrlar va sahifalash ishlaydi', async () => {
     const token = await adminToken()

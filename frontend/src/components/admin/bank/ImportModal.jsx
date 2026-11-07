@@ -8,6 +8,7 @@ import Button from '../../ui/Button.jsx'
 import DataTable from '../../ui/DataTable.jsx'
 import Field from '../../ui/Field.jsx'
 import Modal from '../../ui/Modal.jsx'
+import StatTile from '../../ui/StatTile.jsx'
 import StatusBadge from '../../ui/StatusBadge.jsx'
 
 const PROBLEM_COLUMNS = [
@@ -30,15 +31,6 @@ const PROBLEM_COLUMNS = [
     ),
   },
 ]
-
-function Stat({ label, value }) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl bg-surface-muted p-3">
-      <div className="text-[13px] font-semibold text-ink-600">{label}</div>
-      <div className="text-xl leading-7 font-bold">{value}</div>
-    </div>
-  )
-}
 
 function SelectStep({ sets, defaultSet, onPreview, onClose }) {
   const [setId, setSetId] = useState(defaultSet ?? '')
@@ -162,10 +154,10 @@ function PreviewStep({ preview, onBack, onDone }) {
       </p>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Jami" value={preview.total} />
-        <Stat label="Yaroqli" value={preview.valid_count} />
-        <Stat label="Xatoli" value={invalid} />
-        <Stat label="Takroriy" value={duplicates} />
+        <StatTile label="Jami" value={preview.total} />
+        <StatTile label="Yaroqli" value={preview.valid_count} />
+        <StatTile label="Xatoli" value={invalid} />
+        <StatTile label="Takroriy" value={duplicates} />
       </div>
 
       {preview.problems.length > 0 && (
