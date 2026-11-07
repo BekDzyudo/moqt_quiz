@@ -108,7 +108,7 @@ function AllSuspicious({ onOpenGroup }) {
         <button
           type="button"
           onClick={() => onOpenGroup(item.group.id)}
-          className="cursor-pointer font-semibold text-brand-500 underline hover:text-brand-900"
+          className="cursor-pointer font-semibold text-brand-500 underline hover:text-brand-ink-strong"
         >
           {item.group.name}
         </button>

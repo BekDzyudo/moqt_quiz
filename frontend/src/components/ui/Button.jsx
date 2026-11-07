@@ -6,10 +6,10 @@ const VARIANTS = {
   secondary:
     'border border-border-400 bg-surface-card hover:bg-surface-muted active:bg-brand-soft',
   dark: 'border-0 bg-brand-900 text-white hover:bg-brand-700 active:bg-brand-700',
-  danger: 'border-0 bg-error text-white shadow-raised hover:bg-[#a32a23] active:bg-[#a32a23]',
+  danger: 'border-0 bg-error-solid text-white shadow-raised hover:bg-error-solid-strong active:bg-error-solid-strong',
   dangerOutline: 'border border-error bg-surface-card text-error hover:bg-error-soft active:bg-error-soft',
   dashed: 'border border-dashed border-border-400 bg-surface-card text-ink-600 hover:bg-surface-muted',
-  ghost: 'border-0 bg-transparent text-brand-700 hover:bg-brand-soft active:bg-brand-soft',
+  ghost: 'border-0 bg-transparent text-brand-ink hover:bg-brand-soft active:bg-brand-soft',
 }
 
 // Dizayndagi o'lchamlar. 36 va 40px tugmalarning bosish maydoni ko'rinmas qatlam bilan 44px.

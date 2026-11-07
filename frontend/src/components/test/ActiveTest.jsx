@@ -2,6 +2,7 @@ import { Check, CircleAlert, Clock, Flag, Loader2, Maximize, WifiOff } from 'luc
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { formatRemaining } from '../../lib/serverClock.js'
 import { useAuth } from '../../store/auth.js'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 import { useAttemptStore } from '../../store/attempt.js'
 import Button from '../ui/Button.jsx'
 import EmptyState from '../ui/EmptyState.jsx'
@@ -47,7 +48,7 @@ function Timer({ remaining }) {
       role="timer"
       aria-label={`Qolgan vaqt ${minutes} daqiqa ${seconds} soniya`}
       className={`flex items-center gap-2 rounded-full px-4 py-2 text-xl leading-7 font-extrabold text-white tabular-nums ${
-        urgent ? 'bg-error' : 'bg-brand-700'
+        urgent ? 'bg-error-solid' : 'bg-brand-700'
       }`}
     >
       <Clock size={18} strokeWidth={1.9} aria-hidden="true" />
@@ -234,6 +235,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
             {answeredCount} / {total} javob
           </div>
           <Timer remaining={remaining} />
+          <ThemeToggle />
           {released && (
             <Button variant="secondary" size="md" icon={Maximize} onClick={handleReturn}>
               To'liq ekranga qaytish

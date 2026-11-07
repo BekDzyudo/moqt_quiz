@@ -81,7 +81,7 @@ function SetCard({ set, onEdit, onImport, onAttach }) {
           {set.groups.map((group) => (
             <span
               key={group}
-              className="rounded-full bg-brand-soft px-2.5 py-1 text-[13px] font-semibold text-brand-900"
+              className="rounded-full bg-brand-soft px-2.5 py-1 text-[13px] font-semibold text-brand-ink-strong"
             >
               {group}
             </span>

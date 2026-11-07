@@ -2,7 +2,7 @@ const TONES = {
   success: 'bg-success-soft text-success',
   warning: 'bg-warning-soft text-warning',
   error: 'bg-error-soft text-error',
-  info: 'bg-brand-soft text-brand-900',
+  info: 'bg-brand-soft text-brand-ink-strong',
   neutral: 'bg-surface-muted text-ink-600',
 }
 

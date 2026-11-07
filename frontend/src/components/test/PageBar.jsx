@@ -3,6 +3,7 @@ import { ROLES } from '../../lib/roles.js'
 import { useAuth } from '../../store/auth.js'
 import BrandMark from '../ui/BrandMark.jsx'
 import Button from '../ui/Button.jsx'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 
 export default function PageBar() {
   const user = useAuth((state) => state.user)
@@ -18,6 +19,7 @@ export default function PageBar() {
             {ROLES[user.role]} · {user.username}
           </div>
         </div>
+        <ThemeToggle />
         <Button variant="secondary" size="sm" icon={LogOut} className="font-semibold" onClick={logout}>
           Chiqish
         </Button>

@@ -3,8 +3,8 @@ import { useEffect, useId, useRef } from 'react'
 import Button from './Button.jsx'
 
 const ICON_TONES = {
-  brand: 'bg-brand-soft text-brand-900',
-  muted: 'bg-surface-muted text-brand-900',
+  brand: 'bg-brand-soft text-brand-ink-strong',
+  muted: 'bg-surface-muted text-brand-ink-strong',
 }
 
 // Modal va Drawer asosi. Native <dialog> fokusni ushlaydi va Esc bilan yopiladi.
@@ -46,7 +46,7 @@ export default function Dialog({
       onCancel={handleCancel}
       onClick={closeOnBackdrop}
       aria-labelledby={titleId}
-      className={`bg-surface-card text-ink-900 shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop:bg-ink-900/55 ${className}`}
+      className={`bg-surface-card text-ink-900 shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop:bg-overlay/55 ${className}`}
     >
       {open && (
         <div className="flex h-full max-h-[inherit] flex-col">

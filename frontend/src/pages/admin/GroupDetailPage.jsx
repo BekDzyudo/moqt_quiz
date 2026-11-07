@@ -277,7 +277,7 @@ export default function GroupDetailPage({ page }) {
             <span className="rounded-full bg-surface-muted px-2.5 py-1 text-ink-600">
               Kirmagan {counts('not_started')}
             </span>
-            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-brand-900">
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-brand-ink-strong">
               Ishlayapti {counts('in_progress')}
             </span>
             <span className="rounded-full bg-success-soft px-2.5 py-1 text-success">
