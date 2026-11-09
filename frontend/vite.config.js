@@ -1,7 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
-import { mockApiPlugin } from './mock-api/vite-plugin.js'
 
 const CSP = [
   "default-src 'self'",
@@ -25,13 +24,16 @@ const SECURITY_HEADERS = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
 }
 
-// API_PROXY_TARGET berilsa so'rovlar real backendga ketadi, aks holda mock ishlaydi.
+// Barcha /api so'rovlari real backendga ketadi. Boshqa manzil kerak bo'lsa,
+// .env.local da API_PROXY_TARGET beriladi.
+const DEFAULT_API = 'http://192.168.100.57'
+
 export default defineConfig(({ mode }) => {
-  const target = loadEnv(mode, process.cwd(), '').API_PROXY_TARGET
-  const proxy = target ? { '/api': { target, changeOrigin: true } } : undefined
+  const target = loadEnv(mode, process.cwd(), '').API_PROXY_TARGET || DEFAULT_API
+  const proxy = { '/api': { target, changeOrigin: true } }
 
   return {
-    plugins: [react(), tailwindcss(), ...(target ? [] : [mockApiPlugin()])],
+    plugins: [react(), tailwindcss()],
     // Windows'da standart holatda faqat ::1 tinglanadi va 127.0.0.1 ochilmaydi.
     server: { host: '127.0.0.1', proxy },
     // Production sarlavhalari: docs/XAVFSIZLIK.md dagi nginx sozlamasi bilan bir xil.

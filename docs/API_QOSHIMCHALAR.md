@@ -1,8 +1,7 @@
 # API kontraktiga qo'shimchalar
 
 Backend dasturchisi uchun. `CLAUDE.md` dagi kontraktdan tashqari frontend tayanadigan
-narsalar. Aniq javob shakllari uchun mock (`frontend/mock-api/`) va uning testlari asosiy
-manba. Mock'ni o'chirish: `frontend/.env.local` da `API_PROXY_TARGET`, README'ga qarang.
+narsalar. Backend javobi bilan farqlar `frontend/src/api/adapters.js` da moslashtirilgan.
 
 ## Ulanish shartlari
 
@@ -78,7 +77,7 @@ manba. Mock'ni o'chirish: `frontend/.env.local` da `API_PROXY_TARGET`, README'ga
 ## Tinglovchi
 
 - Savolni belgilash yo'q: `flags` endpointi va `flagged` maydonlari kontraktdan olib
-  tashlangan. Mock'da ular hali bor, lekin frontend ishlatmaydi.
+  tashlangan.
 - `GET /me/test/` javobida `retake_allowed` va `server_now`.
 - `GET /attempts/{id}/` javobida `fullscreen_exits`, `exit_limit`.
 - `GET /media/attempt/{key}`: urinishga xos rasm, test tugagach yopiladi.

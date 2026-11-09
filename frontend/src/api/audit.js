@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { saveBlob } from '../lib/download.js'
+import { adaptAuditEntry } from './adapters.js'
 import { api } from './client.js'
 import { useRequest } from './useRequest.js'
 
@@ -13,7 +14,7 @@ export function useAuditLog({ actor, action, date, page }) {
       () =>
         api
           .get('/audit/', { params: clean({ actor, action, date, page }) })
-          .then(({ data }) => data),
+          .then(({ data }) => ({ ...data, results: data.results.map(adaptAuditEntry) })),
       [actor, action, date, page],
     ),
   )

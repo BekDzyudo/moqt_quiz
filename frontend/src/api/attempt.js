@@ -1,8 +1,9 @@
+import { adaptMyTest } from './adapters.js'
 import { api } from './client.js'
 
 const data = ({ data: body }) => body
 
-export const fetchMyTest = () => api.get('/me/test/').then(data)
+export const fetchMyTest = () => api.get('/me/test/').then(data).then(adaptMyTest)
 export const startTest = () => api.post('/me/test/start/').then(data)
 
 export const fetchAttempt = (id) => api.get(`/attempts/${id}/`).then(data)
