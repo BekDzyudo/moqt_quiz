@@ -3,7 +3,7 @@ import { CircleCheck, Info, TriangleAlert } from 'lucide-react'
 const TONES = {
   error: { className: 'bg-error-soft text-error', icon: TriangleAlert, role: 'alert' },
   success: { className: 'bg-success-soft text-success', icon: CircleCheck, role: 'status' },
-  info: { className: 'bg-brand-soft text-brand-900', icon: Info, role: 'alert' },
+  info: { className: 'bg-brand-soft text-brand-ink-strong', icon: Info, role: 'alert' },
 }
 
 export default function Alert({ tone, children }) {

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* Faqat `ktri` temasi: OS qorong'i rejimi interfeysni o'zgartirmaydi. */
+/* `ktri` (yorug', standart) va `ktri-dark`. Tanlovni foydalanuvchi qiladi, OS sozlamasi emas. */
 @plugin 'daisyui' {
   themes: false;
   logs: false;
@@ -42,6 +42,41 @@
   --noise: 0;
 }
 
+@plugin 'daisyui/theme' {
+  name: 'ktri-dark';
+  color-scheme: dark;
+
+  --color-base-100: #15242f;
+  --color-base-200: #0e1a24;
+  --color-base-300: #27394a;
+  --color-base-content: #e8f0f7;
+  --color-primary: #1f73b7;
+  --color-primary-content: #ffffff;
+  --color-secondary: #62bdf0;
+  --color-secondary-content: #0e1a24;
+  --color-accent: #38b6f0;
+  --color-accent-content: #0e1a24;
+  --color-neutral: #a9bac9;
+  --color-neutral-content: #0e1a24;
+  --color-info: #62bdf0;
+  --color-info-content: #0e1a24;
+  --color-success: #6fd7a6;
+  --color-success-content: #0e1a24;
+  --color-warning: #f2bd62;
+  --color-warning-content: #0e1a24;
+  --color-error: #ff9c93;
+  --color-error-content: #0e1a24;
+
+  --radius-selector: 12px;
+  --radius-field: 12px;
+  --radius-box: 16px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
 /* design/tokens.json dagi nomlar utility sifatida: bg-brand-soft, text-ink-600 ... */
 @theme {
   --font-sans: 'Manrope', 'Segoe UI', system-ui, sans-serif;
@@ -52,6 +87,9 @@
   --color-brand-500: #0d7cbb;
   --color-brand-400: #009adc;
   --color-brand-soft: #d9edf9;
+  /* Matn va ikonka uchun. brand-700/900 esa faqat oq matnli fon. */
+  --color-brand-ink: #1763a0;
+  --color-brand-ink-strong: #0f4a7c;
   --color-seal-navy: #283770;
   --color-surface-page: #f4f8fd;
   --color-surface-card: #ffffff;
@@ -64,10 +102,61 @@
   --color-success-soft: #e5f4e4;
   --color-warning-soft: #f9eeda;
   --color-error-soft: #fbebeb;
+  /* Oq matnli xato foni: ikkala temada bir xil. */
+  --color-error-solid: #c0342c;
+  --color-error-solid-strong: #a32a23;
+  --color-overlay: #10202e;
+  --color-chart-failed: #c9d6e2;
 
   --shadow-control: 0 1px 2px rgba(16, 32, 46, 0.06);
   --shadow-card: 0 12px 32px rgba(15, 74, 124, 0.1);
   --shadow-raised: 0 2px 6px rgba(15, 74, 124, 0.18);
+}
+
+/* Brend ko'kidan olingan to'q navy: sof qora emas, KTRI ranglari bilan bir oilada. */
+[data-theme='ktri-dark'] {
+  --color-brand-900: #185f99;
+  --color-brand-700: #1f73b7;
+  --color-brand-500: #62bdf0;
+  --color-brand-400: #38b6f0;
+  --color-brand-soft: #143b58;
+  --color-brand-ink: #8fd0f5;
+  --color-brand-ink-strong: #b4e0f9;
+  --color-surface-page: #0e1a24;
+  --color-surface-card: #15242f;
+  --color-surface-muted: #1c2f3d;
+  --color-ink-900: #e8f0f7;
+  --color-ink-600: #a9bac9;
+  --color-ink-400: #8b9eaf;
+  --color-border-200: #27394a;
+  --color-border-400: #5f7a90;
+  --color-success-soft: #12352a;
+  --color-warning-soft: #3b2c12;
+  --color-error-soft: #40201f;
+  --color-overlay: #05090d;
+  --color-chart-failed: #4a6073;
+
+  --shadow-control: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-raised: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Login paneli: bino ko'rinadi, oq matn esa eng yorug' joyda ham o'qiladi. */
+.login-overlay {
+  background: linear-gradient(
+    150deg,
+    rgba(15, 74, 124, 0.9) 0%,
+    rgba(16, 84, 138, 0.86) 55%,
+    rgba(15, 88, 145, 0.84) 100%
+  );
+}
+
+[data-theme='ktri-dark'] .login-overlay {
+  background: linear-gradient(
+    150deg,
+    rgba(8, 18, 27, 0.92) 0%,
+    rgba(14, 42, 64, 0.86) 100%
+  );
 }
 
 /* Test ekrani: belgilash va chop etish o'chiriladi, kiritish maydonlari ishlayveradi. */
@@ -112,7 +201,7 @@ body.test-active input {
   }
 
   a:hover {
-    color: var(--color-brand-900);
+    color: var(--color-brand-ink-strong);
   }
 
   :focus-visible {

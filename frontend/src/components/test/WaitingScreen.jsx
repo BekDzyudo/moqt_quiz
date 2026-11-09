@@ -76,7 +76,7 @@ export default function WaitingScreen({ test, onStarted }) {
                   size={18}
                   strokeWidth={1.9}
                   aria-hidden="true"
-                  className="mt-[3px] shrink-0 text-brand-900"
+                  className="mt-[3px] shrink-0 text-brand-ink-strong"
                 />
                 <span className="leading-[23px]">
                   Admin testni ochgach, shu yerda "Testni boshlash" tugmasi paydo bo'ladi. Sahifani

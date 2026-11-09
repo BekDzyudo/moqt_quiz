@@ -38,6 +38,12 @@ const statusBadge = (row) => {
 
 const COLUMNS = [
   {
+    key: 'number',
+    header: '№',
+    width: 56,
+    render: (row) => <span className="text-ink-600">{row.number}</span>,
+  },
+  {
     key: 'full_name',
     header: 'F.I.Sh.',
     render: (row) => (
@@ -75,11 +81,16 @@ const COLUMNS = [
   { key: 'result', header: 'Natija', render: statusBadge },
 ]
 
-// Qayta topshirgan tinglovchining har bir urinishi alohida qator.
-const expandAttempts = (row) =>
+// Qayta topshirgan tinglovchining har bir urinishi alohida qator, tartib raqami esa bitta.
+const expandAttempts = (row, memberIndex) =>
   row.attempts.length > 1
-    ? row.attempts.map((attempt, index) => ({ ...row, ...attempt, rowKey: `${row.id}-${index}` }))
-    : [{ ...row, rowKey: String(row.id) }]
+    ? row.attempts.map((attempt, index) => ({
+        ...row,
+        ...attempt,
+        rowKey: `${row.id}-${index}`,
+        number: index === 0 ? memberIndex + 1 : '',
+      }))
+    : [{ ...row, rowKey: String(row.id), number: memberIndex + 1 }]
 
 function AllSuspicious({ onOpenGroup }) {
   const { data: items, loading, error, reload } = useSuspiciousAttempts()
@@ -97,7 +108,7 @@ function AllSuspicious({ onOpenGroup }) {
         <button
           type="button"
           onClick={() => onOpenGroup(item.group.id)}
-          className="cursor-pointer font-semibold text-brand-500 underline hover:text-brand-900"
+          className="cursor-pointer font-semibold text-brand-500 underline hover:text-brand-ink-strong"
         >
           {item.group.name}
         </button>

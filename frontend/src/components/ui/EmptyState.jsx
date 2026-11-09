@@ -1,5 +1,5 @@
 const TONES = {
-  neutral: 'bg-brand-soft text-brand-700',
+  neutral: 'bg-brand-soft text-brand-ink',
   error: 'bg-error-soft text-error',
 }
 

@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { saveBlob } from '../lib/download.js'
+import { adaptResults } from './adapters.js'
 import { api } from './client.js'
 import { useRequest } from './useRequest.js'
 
@@ -12,7 +13,7 @@ export const useDashboard = () => useRequest(fetchDashboard)
 export function useResults(groupId) {
   return useRequest(
     useCallback(
-      () => (groupId ? api.get('/results/', { params: { group: groupId } }).then(data) : Promise.resolve(null)),
+      () => (groupId ? api.get('/results/', { params: { group: groupId } }).then(data).then(adaptResults) : Promise.resolve(null)),
       [groupId],
     ),
   )

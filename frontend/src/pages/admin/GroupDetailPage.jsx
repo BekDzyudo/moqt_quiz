@@ -50,6 +50,12 @@ const LIVE_STATUS = {
 
 const MEMBER_COLUMNS = [
   {
+    key: 'number',
+    header: '№',
+    width: 56,
+    render: (_, index) => <span className="text-ink-600">{index + 1}</span>,
+  },
+  {
     key: 'full_name',
     header: 'F.I.Sh.',
     render: (member) => <span className="font-semibold">{member.full_name}</span>,
@@ -271,7 +277,7 @@ export default function GroupDetailPage({ page }) {
             <span className="rounded-full bg-surface-muted px-2.5 py-1 text-ink-600">
               Kirmagan {counts('not_started')}
             </span>
-            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-brand-900">
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-brand-ink-strong">
               Ishlayapti {counts('in_progress')}
             </span>
             <span className="rounded-full bg-success-soft px-2.5 py-1 text-success">
@@ -292,6 +298,11 @@ export default function GroupDetailPage({ page }) {
             icon: Users,
             title: "Guruhda tinglovchilar yo'q",
             description: "Ro'yxatni Excel bilan yuklang yoki bittalab qo'shing.",
+            action: (
+              <Button size="md" icon={Upload} onClick={() => setDialog('import')}>
+                Excel import
+              </Button>
+            ),
           }}
         />
       </Card>
@@ -378,7 +389,12 @@ export default function GroupDetailPage({ page }) {
       )}
 
       {dialog === 'member' && (
-        <AddMemberModal group={group} onClose={() => setDialog(null)} onAdded={reloadAll} />
+        <AddMemberModal
+          group={group}
+          onClose={() => setDialog(null)}
+          onAdded={reloadAll}
+          onImport={() => setDialog('import')}
+        />
       )}
 
       {dialog === 'import' && (

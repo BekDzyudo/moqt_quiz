@@ -7,8 +7,10 @@ menyudagi bo'lim nomi bilan yozilgan.
 
 1. **Savol to'plamlari** bo'limida "Yangi to'plam": nomi, testdagi savollar soni,
    vaqt va o'tish chegarasi.
-2. **Savollar banki** bo'limida "Excel/Word import": to'plamni tanlang, faylni
-   yuklang, "Tekshirish" bosing. Shablonni shu oynadan yuklab oling.
+2. **Savol to'plamlari** bo'limida to'plam kartasidagi "Excel import" tugmasini
+   bosing (yoki **Savollar banki** bo'limida "Excel/Word import"da to'plamni
+   tanlang), faylni yuklang, "Tekshirish" bosing. Fayl namunasi va shablon shu
+   oynada.
 3. Tekshiruv xatoli qatorlarni raqami va sababi bilan ko'rsatadi. Yaroqlilarini
    saqlang, xatolilarini faylda tuzatib, qayta yuklang.
 

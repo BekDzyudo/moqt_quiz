@@ -1,20 +1,21 @@
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-// Ranglar hujjatda belgilangan. O'tmaganlar rangi fon bilan kam kontrastli, shuning uchun
-// ustunga ingichka chegara, ustiga son, yonida afsona va pastda jadval bor.
-const PASSED = '#1763a0'
-const FAILED = '#c9d6e2'
-const FAILED_EDGE = '#7b93a8'
+// Ranglar tokenlardan: ikkala temaga mos. O'tmaganlar rangi fon bilan kam kontrastli, shuning
+// uchun ustunga ingichka chegara, ustiga son, yonida afsona va pastda jadval bor.
+const PASSED = 'var(--color-brand-700)'
+const FAILED = 'var(--color-chart-failed)'
+const FAILED_EDGE = 'var(--color-border-400)'
+const INK = 'var(--color-ink-900)'
 
 function Tick({ x, y, payload, notes }) {
   const note = notes[payload.value]
   return (
     <g transform={`translate(${x},${y})`}>
-      <text textAnchor="middle" dy={14} fontSize={12} fontWeight={700} fill="#10202e">
+      <text textAnchor="middle" dy={14} fontSize={12} fontWeight={700} fill={INK}>
         {payload.value}
       </text>
       {note && (
-        <text textAnchor="middle" dy={30} fontSize={12} fill="#4a5b6b">
+        <text textAnchor="middle" dy={30} fontSize={12} fill="var(--color-ink-600)">
           {note}
         </text>
       )}
@@ -53,12 +54,12 @@ export default function DistributionChart({ data }) {
                 dataKey="label"
                 interval={0}
                 height={44}
-                stroke="#7b93a8"
+                stroke={FAILED_EDGE}
                 tickLine={false}
                 tick={<Tick notes={notes} />}
               />
               <YAxis hide allowDecimals={false} />
-              <Tooltip cursor={{ fill: '#eaf2fa' }} content={<ChartTooltip />} isAnimationActive={false} />
+              <Tooltip cursor={{ fill: 'var(--color-surface-muted)' }} content={<ChartTooltip />} isAnimationActive={false} />
               <Bar dataKey="count" radius={[6, 6, 0, 0]} minPointSize={2} isAnimationActive={false}>
                 {data.map((bucket) => (
                   <Cell
@@ -67,7 +68,7 @@ export default function DistributionChart({ data }) {
                     stroke={bucket.passed ? PASSED : FAILED_EDGE}
                   />
                 ))}
-                <LabelList dataKey="count" position="top" fontSize={13} fontWeight={700} fill="#10202e" />
+                <LabelList dataKey="count" position="top" fontSize={13} fontWeight={700} fill={INK} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -80,7 +81,7 @@ export default function DistributionChart({ data }) {
           O'tgan
         </span>
         <span className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="size-3 rounded-[3px] border border-border-400 bg-[#c9d6e2]" />
+          <span aria-hidden="true" className="size-3 rounded-[3px] border border-border-400 bg-chart-failed" />
           O'tmagan
         </span>
       </div>

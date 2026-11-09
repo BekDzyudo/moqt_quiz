@@ -157,6 +157,10 @@ Dizayn **KTRI dizayn tizimi** asosida (my.moqt.uz'dagi indigo/violet
 | error | `#c0342c` (fon `#fbebeb`) | Xato, o'tmadi, shubhali |
 | seal-navy | `#283770` | Faqat rasmiy hujjat (PDF varaqa) sarlavhasi |
 
+- Qorong'i rejim: `ktri-dark` tema (`src/index.css`), standart yorug', tanlov
+  brauzerda saqlanadi. Rang faqat tokendan olinadi: matn va ikonka uchun
+  `text-brand-ink`, `text-brand-ink-strong`; `brand-700/900` faqat oq matnli fon;
+  oq matnli xato foni `bg-error-solid`. Logotip doim oq doirada.
 - Shrift: **Manrope** (Google Fonts), zaxira `Segoe UI, system-ui`.
   Raqamli ma'lumot (login, parol, PINFL) — `IBM Plex Mono`.
 - Radius: input/tugma 12px, karta 16px, katta panel 24px, badge 999px.

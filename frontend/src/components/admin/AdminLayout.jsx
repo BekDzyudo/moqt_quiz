@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { ROLES } from '../../lib/roles.js'
 import { useAuth } from '../../store/auth.js'
 import BrandMark from '../ui/BrandMark.jsx'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 import Button from '../ui/Button.jsx'
 import ChangePasswordModal from './ChangePasswordModal.jsx'
 import { ADMIN_PAGES, SUPERADMIN_PAGES } from './navigation.js'
@@ -13,7 +14,7 @@ function NavItem({ page }) {
   const linkClass = ({ isActive }) =>
     `flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] no-underline ${
       isActive
-        ? 'bg-brand-soft font-bold text-brand-900 hover:text-brand-900'
+        ? 'bg-brand-soft font-bold text-brand-ink-strong hover:text-brand-ink-strong'
         : 'font-medium text-ink-600 hover:bg-surface-muted hover:text-ink-900'
     }`
 
@@ -36,7 +37,10 @@ export default function AdminLayout() {
         aria-label="Asosiy menyu"
         className="flex min-w-0 flex-[1_1_248px] flex-col gap-1 border-r [&>*]:shrink-0 border-border-200 bg-surface-card px-4 py-6 min-[808px]:sticky min-[808px]:top-0 min-[808px]:h-screen min-[808px]:self-start min-[808px]:overflow-y-auto"
       >
-        <BrandMark className="px-2 pb-5" />
+        <div className="flex items-start justify-between gap-2 pb-5 pl-2">
+          <BrandMark />
+          <ThemeToggle size="xs" />
+        </div>
 
         {ADMIN_PAGES.map((page) => (
           <NavItem key={page.to} page={page} />
@@ -60,7 +64,7 @@ export default function AdminLayout() {
             <button
               type="button"
               onClick={() => setChangingPassword(true)}
-              className="relative cursor-pointer text-left text-[13px] leading-[18px] text-brand-500 underline after:absolute after:-inset-y-3 after:inset-x-0 after:content-[''] hover:text-brand-900"
+              className="relative cursor-pointer text-left text-[13px] leading-[18px] text-brand-500 underline after:absolute after:-inset-y-3 after:inset-x-0 after:content-[''] hover:text-brand-ink-strong"
             >
               Parolni o'zgartirish
             </button>

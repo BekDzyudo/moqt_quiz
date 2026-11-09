@@ -1,32 +1,57 @@
 import { useCallback } from 'react'
 import { saveBlob } from '../lib/download.js'
+import { adaptGroup, adaptMember } from './adapters.js'
 import { api } from './client.js'
 import { useRequest } from './useRequest.js'
 
 const data = ({ data: body }) => body
 
+// Backend "Yopiq" holatni ikki xil qaytaradi (draft va closed), shuning uchun
+// bu filtr serverga yuborilmaydi va ro'yxat shu yerda saralanadi.
 export function useGroups({ q, status }) {
   return useRequest(
     useCallback(
       () =>
         api
-          .get('/groups/', { params: { q: q || undefined, status: status || undefined } })
-          .then(data),
+          .get('/groups/', {
+            params: {
+              q: q || undefined,
+              status: status && status !== 'closed' ? status : undefined,
+            },
+          })
+          .then(({ data: rows }) => rows.map(adaptGroup))
+          .then((rows) => (status ? rows.filter((group) => group.test_status === status) : rows)),
       [q, status],
     ),
   )
 }
 
 export const useGroup = (id) =>
-  useRequest(useCallback(() => api.get(`/groups/${encodeURIComponent(id)}/`).then(data), [id]))
+  useRequest(
+    useCallback(
+      () =>
+        api
+          .get(`/groups/${encodeURIComponent(id)}/`)
+          .then(data)
+          .then(adaptGroup),
+      [id],
+    ),
+  )
 
 export const useGroupMembers = (id) =>
   useRequest(
-    useCallback(() => api.get(`/groups/${encodeURIComponent(id)}/members/`).then(data), [id]),
+    useCallback(
+      () =>
+        api
+          .get(`/groups/${encodeURIComponent(id)}/members/`)
+          .then(({ data: rows }) => rows.map(adaptMember)),
+      [id],
+    ),
   )
 
-export const createGroup = (fields) => api.post('/groups/', fields).then(data)
-export const updateGroup = (id, fields) => api.patch(`/groups/${id}/`, fields).then(data)
+export const createGroup = (fields) => api.post('/groups/', fields).then(data).then(adaptGroup)
+export const updateGroup = (id, fields) =>
+  api.patch(`/groups/${id}/`, fields).then(data).then(adaptGroup)
 export const addMember = (id, fields) => api.post(`/groups/${id}/members/`, fields).then(data)
 
 export function previewMembers(id, file) {
@@ -44,8 +69,7 @@ export const generateCredentials = (id, userIds) =>
 
 export const openGroupTest = (id) => api.post(`/groups/${id}/open/`).then(data)
 
-export const closeGroupTest = (id, mode) =>
-  api.post(`/groups/${id}/close/`, { mode }).then(data)
+export const closeGroupTest = (id, mode) => api.post(`/groups/${id}/close/`, { mode }).then(data)
 
 export const grantRetake = (groupId, userId, reason) =>
   api.post(`/groups/${groupId}/members/${userId}/retake/`, { reason }).then(data)
