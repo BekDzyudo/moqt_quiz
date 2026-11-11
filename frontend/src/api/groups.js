@@ -81,3 +81,10 @@ export async function downloadMembersTemplate() {
   const { data: blob } = await api.get('/groups/members/template.xlsx', { responseType: 'blob' })
   saveBlob(blob, 'tinglovchilar-shabloni.xlsx')
 }
+
+// Bitta tinglovchi: ma'lumot, login, parol (qo'lda yoki generate_password), is_active, logout.
+// Javobdagi `password` faqat shu safar keladi.
+export const updateMember = (groupId, userId, fields) =>
+  api.patch(`/groups/${groupId}/members/${userId}/`, fields).then(data).then(adaptMember)
+
+export const deleteMember = (groupId, userId) => api.delete(`/groups/${groupId}/members/${userId}/`)

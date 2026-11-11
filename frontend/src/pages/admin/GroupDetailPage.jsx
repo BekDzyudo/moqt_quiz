@@ -1,5 +1,11 @@
 import {
+  Ban,
   CircleAlert,
+  CircleCheck,
+  KeyRound,
+  LogOut,
+  Trash,
+  UserPen,
   Upload,
   Key,
   Loader2,
@@ -14,8 +20,10 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuestionSets } from '../../api/bank.js'
 import {
+  deleteMember,
   generateCredentials,
   openGroupTest,
+  updateMember,
   useGroup,
   useGroupMembers,
 } from '../../api/groups.js'
@@ -25,6 +33,8 @@ import CredentialsCard from '../../components/admin/groups/CredentialsCard.jsx'
 import CredentialsResultModal from '../../components/admin/groups/CredentialsResultModal.jsx'
 import ExitPasswordCard from '../../components/admin/groups/ExitPasswordCard.jsx'
 import GroupModal from '../../components/admin/groups/GroupModal.jsx'
+import MemberAccessModal from '../../components/admin/groups/MemberAccessModal.jsx'
+import MemberEditModal from '../../components/admin/groups/MemberEditModal.jsx'
 import MemberImportModal from '../../components/admin/groups/MemberImportModal.jsx'
 import RetakeModal from '../../components/admin/groups/RetakeModal.jsx'
 import ActionMenu from '../../components/ui/ActionMenu.jsx'
@@ -62,7 +72,12 @@ const MEMBER_COLUMNS = [
   {
     key: 'full_name',
     header: 'F.I.Sh.',
-    render: (member) => <span className="font-semibold">{member.full_name}</span>,
+    render: (member) => (
+      <div className="flex flex-col items-start gap-1">
+        <span className={`font-semibold ${member.is_active === false ? 'text-ink-400 line-through' : ''}`}>{member.full_name}</span>
+        {member.is_active === false && <StatusBadge tone="error">Bloklangan</StatusBadge>}
+      </div>
+    ),
   },
   {
     key: 'login',
@@ -162,6 +177,12 @@ export default function GroupDetailPage({ page }) {
     reloadAll()
   }
 
+  const runMemberAction = async (fields) => {
+    await updateMember(group.id, selectedMember.id, fields)
+    closeDialog()
+    reloadAll()
+  }
+
   const handleRegenerateMember = async () => {
     const result = await generateCredentials(group.id, [selectedMember.id])
     closeDialog()
@@ -179,6 +200,8 @@ export default function GroupDetailPage({ page }) {
         <ActionMenu
           label={`${member.full_name} — amallar`}
           items={[
+            { label: "Ma'lumotlarni tahrirlash", icon: UserPen, onSelect: () => memberDialog('member-edit', member) },
+            { label: 'Login va parol', icon: KeyRound, onSelect: () => memberDialog('member-access', member) },
             {
               label: 'Qayta topshirishga ruxsat',
               icon: RotateCcw,
@@ -190,6 +213,23 @@ export default function GroupDetailPage({ page }) {
               label: 'Login-parolni qayta yaratish',
               icon: Key,
               onSelect: () => memberDialog('credential', member),
+            },
+            {
+              label: 'Seansni yakunlash',
+              icon: LogOut,
+              disabled: !member.has_credentials,
+              hint: "Login-parol hali berilmagan.",
+              onSelect: () => memberDialog('member-logout', member),
+            },
+            member.is_active === false
+              ? { label: 'Blokdan chiqarish', icon: CircleCheck, onSelect: () => memberDialog('member-unblock', member) }
+              : { label: 'Bloklash', icon: Ban, onSelect: () => memberDialog('member-block', member) },
+            {
+              label: "O'chirish",
+              icon: Trash,
+              disabled: member.live.status !== 'not_started',
+              hint: "Testni boshlagan tinglovchini o'chirib bo'lmaydi — bloklang.",
+              onSelect: () => memberDialog('member-delete', member),
             },
           ]}
         />
@@ -372,6 +412,91 @@ export default function GroupDetailPage({ page }) {
           <p className="m-0">
             <strong>{selectedMember.full_name}</strong> uchun yangi parol yaratiladi. Eski parol
             ishlamay qoladi. Tinglovchi testda bo'lsa, qayta kirishi kerak bo'ladi, vaqt to'xtamaydi.
+          </p>
+        </ConfirmModal>
+      )}
+
+      {dialog === 'member-edit' && (
+        <MemberEditModal
+          groupId={group.id}
+          member={selectedMember}
+          onClose={closeDialog}
+          onSaved={() => {
+            closeDialog()
+            reloadAll()
+          }}
+        />
+      )}
+
+      {dialog === 'member-access' && (
+        <MemberAccessModal
+          groupId={group.id}
+          groupPrefix={group.login_prefix}
+          member={selectedMember}
+          onClose={closeDialog}
+          onSaved={reloadAll}
+        />
+      )}
+
+      {dialog === 'member-block' && (
+        <ConfirmModal
+          title="Tinglovchini bloklaysizmi?"
+          confirmLabel="Bloklash"
+          icon={Ban}
+          onConfirm={() => runMemberAction({ is_active: false })}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            <strong>{selectedMember.full_name}</strong> tizimga kira olmaydi, ochiq seansi darhol yopiladi.
+            {selectedMember.live.status === 'in_progress' &&
+              " U hozir test ishlayapti: testi yakunlanmaydi, lekin davom ettira olmaydi va vaqt tugaganda avtomatik yopiladi."}
+          </p>
+        </ConfirmModal>
+      )}
+
+      {dialog === 'member-unblock' && (
+        <ConfirmModal
+          title="Blokdan chiqarasizmi?"
+          confirmLabel="Blokdan chiqarish"
+          icon={CircleCheck}
+          variant="primary"
+          onConfirm={() => runMemberAction({ is_active: true })}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            <strong>{selectedMember.full_name}</strong> yana o'z login-paroli bilan kira oladi.
+          </p>
+        </ConfirmModal>
+      )}
+
+      {dialog === 'member-logout' && (
+        <ConfirmModal
+          title="Seansni yakunlaysizmi?"
+          confirmLabel="Seansni yakunlash"
+          icon={LogOut}
+          variant="primary"
+          onConfirm={() => runMemberAction({ logout: true })}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            <strong>{selectedMember.full_name}</strong> hozirgi qurilmadan chiqariladi (masalan, boshqa kompyuterda
+            ochiq qolgan bo'lsa). Login va parol o'zgarmaydi; test ishlayotgan bo'lsa, qayta kirgach davom etadi.
+          </p>
+        </ConfirmModal>
+      )}
+
+      {dialog === 'member-delete' && (
+        <ConfirmModal
+          title="Tinglovchini o'chirasizmi?"
+          onConfirm={async () => {
+            await deleteMember(group.id, selectedMember.id)
+            closeDialog()
+            reloadAll()
+          }}
+          onClose={closeDialog}
+        >
+          <p className="m-0">
+            <strong>{selectedMember.full_name}</strong> guruhdan butunlay o'chiriladi. Bu amalni qaytarib bo'lmaydi.
           </p>
         </ConfirmModal>
       )}
