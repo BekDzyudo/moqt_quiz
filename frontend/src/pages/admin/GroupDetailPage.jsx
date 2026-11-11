@@ -46,7 +46,11 @@ const LIVE_STATUS = {
   not_started: { tone: 'neutral', label: 'Kirmagan' },
   in_progress: { tone: 'info', label: 'Ishlayapti' },
   finished: { tone: 'success', label: 'Yakunladi' },
+  expired: { tone: 'warning', label: 'Vaqti tugadi' },
+  terminated: { tone: 'error', label: "To'xtatilgan" },
 }
+// Noma'lum holat kelsa ham sahifa qulamasin.
+const liveStatus = (status) => LIVE_STATUS[status] ?? { tone: 'neutral', label: status }
 
 const MEMBER_COLUMNS = [
   {
@@ -77,7 +81,7 @@ const MEMBER_COLUMNS = [
       live.retake_pending ? (
         <StatusBadge tone="warning">Qayta topshiradi</StatusBadge>
       ) : (
-        <StatusBadge tone={LIVE_STATUS[live.status].tone}>{LIVE_STATUS[live.status].label}</StatusBadge>
+        <StatusBadge tone={liveStatus(live.status).tone}>{liveStatus(live.status).label}</StatusBadge>
       ),
   },
   {
