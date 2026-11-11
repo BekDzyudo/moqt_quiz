@@ -18,16 +18,37 @@ export const updateQuestionSet = (id, fields) =>
 export const deleteQuestionSet = (id) => api.delete(`/question-sets/${id}/`)
 export const syncQuestionSet = (id) => api.post(`/question-sets/${id}/sync-api/`).then(data)
 
-export function useQuestions({ set, source, isActive, q, page }) {
-  return useRequest(
-    useCallback(
-      () =>
-        api
-          .get('/questions/', { params: clean({ set, source, is_active: isActive, q, page }) })
-          .then(data),
-      [set, source, isActive, q, page],
-    ),
-  )
+// Savollar ro'yxati filtrlari: backend `filtered_questions` bilan bir xil nomlar.
+const questionParams = ({ set, category, source, isActive, hasImage, inUse, q, ordering, page, pageSize }) =>
+  clean({
+    set,
+    category,
+    source,
+    is_active: isActive,
+    has_image: hasImage,
+    in_use: inUse,
+    q,
+    ordering,
+    page,
+    page_size: pageSize,
+  })
+
+export function useQuestions(filters) {
+  const key = JSON.stringify(questionParams(filters))
+  return useRequest(useCallback(() => api.get('/questions/', { params: JSON.parse(key) }).then(data), [key]))
+}
+
+// action: activate | deactivate | move | delete
+export const bulkQuestions = (action, ids, questionSet) =>
+  api.post('/questions/bulk/', { action, ids, question_set: questionSet }).then(data)
+
+export async function downloadQuestions(filters) {
+  // Eksport sahifalanmaydi: joriy filtr bo'yicha hammasi.
+  const { data: blob } = await api.get('/questions/export.xlsx', {
+    params: questionParams({ ...filters, page: undefined, pageSize: undefined }),
+    responseType: 'blob',
+  })
+  saveBlob(blob, 'savollar.xlsx')
 }
 
 export const fetchQuestion = (id) => api.get(`/questions/${id}/`).then(data)
@@ -43,11 +64,22 @@ export function uploadQuestionImage(id, file) {
 
 export const removeQuestionImage = (id) => api.delete(`/questions/${id}/image/`)
 
+// Backend xatosi: {row, message}. Sahifa {row, errors[], status} kutadi.
+const toProblem = (problem, index) => ({
+  ...problem,
+  id: `${problem.row ?? 'fayl'}-${index}`,
+  errors: problem.errors ?? [problem.message],
+  status: /takror|allaqachon bor/i.test(problem.message ?? '') ? 'duplicate' : 'invalid',
+})
+
 export function previewImport(file, questionSet) {
   const form = new FormData()
   form.append('file', file)
   form.append('question_set', questionSet)
-  return api.post('/questions/import/preview/', form).then(data)
+  return api
+    .post('/questions/import/preview/', form)
+    .then(data)
+    .then((preview) => ({ ...preview, problems: (preview.problems ?? []).map(toProblem) }))
 }
 
 export const commitImport = (token) => api.post('/questions/import/commit/', { token }).then(data)

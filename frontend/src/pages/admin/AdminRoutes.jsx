@@ -8,6 +8,7 @@ import AuditPage from './AuditPage.jsx'
 import DashboardPage from './DashboardPage.jsx'
 import GroupDetailPage from './GroupDetailPage.jsx'
 import GroupsPage from './GroupsPage.jsx'
+import LivePage from './LivePage.jsx'
 import PlaceholderPage from './PlaceholderPage.jsx'
 import QuestionSetsPage from './QuestionSetsPage.jsx'
 import QuestionsPage from './QuestionsPage.jsx'
@@ -17,6 +18,7 @@ const UiKitPage = import.meta.env.DEV ? lazy(() => import('./UiKitPage.jsx')) : 
 
 const SCREENS = {
   '/admin': DashboardPage,
+  '/admin/test-jarayoni': LivePage,
   '/admin/natijalar': ResultsPage,
   '/admin/savollar': QuestionsPage,
   '/admin/toplamlar': QuestionSetsPage,

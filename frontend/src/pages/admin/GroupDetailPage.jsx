@@ -86,9 +86,13 @@ const MEMBER_COLUMNS = [
     render: ({ live }) => (
       <div className="flex flex-col gap-0.5 text-ink-600">
         <span>{live.progress ?? '—'}</span>
-        {live.previous?.map((item) => (
-          <span key={item} className="text-[13px]">
-            {item}
+        {live.previous?.map((item, index) => (
+          <span key={item.id ?? index} className="text-[13px]">
+            {typeof item === 'string'
+              ? item
+              : `${item.label}: ${item.correct_count ?? '—'} / ${item.n_total}${
+                  item.passed === null ? '' : item.passed ? " · O'tdi" : " · O'tmadi"
+                }`}
           </span>
         ))}
       </div>

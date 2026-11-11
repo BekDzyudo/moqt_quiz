@@ -5,6 +5,7 @@ import {
   finishAttempt,
   saveAnswer,
   sendEvent,
+  unlockAttempt,
 } from '../api/attempt.js'
 import { errorMessage } from '../api/client.js'
 import { loadPending, savePending } from '../lib/pendingQueue.js'
@@ -13,6 +14,10 @@ import { syncServerClock } from '../lib/serverClock.js'
 const RETRY_MS = 5000
 
 const isExpired = (error) => error.response?.data?.code === 'attempt_expired'
+// Admin yakunlagan yoki chiqishlar limitdan oshib server to'xtatgan.
+const isFinished = (error) => error.response?.data?.code === 'attempt_finished'
+// Server testni qulflagan: admin bergan kod bilan ochilguncha savol va javob yopiq.
+const isLocked = (error) => error.response?.data?.code === 'attempt_locked'
 
 // Navbat holati store'dan tashqarida: u render bilan bog'liq emas.
 let entries = []
@@ -56,7 +61,26 @@ function applyPendingToQuestion(question) {
   }
 }
 
+// "Keyinroq qaytaman" belgilari faqat shu brauzerda saqlanadi (serverga ketmaydi, baholashga ta'sir qilmaydi).
+const flagsKey = (attemptId) => `moqt.flags.${attemptId}`
+function loadFlags(attemptId) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(flagsKey(attemptId)) ?? '[]')
+    return Array.isArray(raw) ? raw.filter(Number.isInteger) : []
+  } catch {
+    return []
+  }
+}
+function saveFlags(attemptId, flags) {
+  try {
+    localStorage.setItem(flagsKey(attemptId), JSON.stringify(flags))
+  } catch {
+    // Saqlab bo'lmasa ham test davom etadi.
+  }
+}
+
 const initialState = {
+  flagged: [],
   attemptId: null,
   status: null,
   total: 0,
@@ -64,6 +88,9 @@ const initialState = {
   answered: [],
   exits: 0,
   exitLimit: 0,
+  locked: false,
+  // "exit" — testdan chiqgani uchun, "admin" — admin qo'lda qulflagan.
+  lockReason: null,
   deadlineAt: null,
   question: null,
   questionError: null,
@@ -94,17 +121,35 @@ export const useAttemptStore = create((set, get) => {
         try {
           const body = await sendEntry(attemptId, entry)
           adopt(body)
-          if (entry.kind === 'event') set({ exits: body.fullscreen_exits })
+          if (entry.kind === 'event') {
+            set({ exits: body.fullscreen_exits })
+            if (typeof body.locked === 'boolean') set({ locked: body.locked, lockReason: body.lock_reason ?? null })
+            if (body.status && body.status !== 'in_progress') {
+              // Chiqishlar limitdan oshdi: server testni to'xtatdi.
+              entries = []
+              persist(attemptId)
+              markEnded()
+              return
+            }
+          }
         } catch (error) {
-          if (!error.response) {
+          // Aloqa yo'q, server vaqtincha ishlamayapti (5xx), cheklov (429) yoki seans tugagan (401):
+          // javob o'chirilmaydi, localStorage'da qoladi va keyin (qayta kirgandan so'ng ham) yuboriladi.
+          const status = error.response?.status
+          if (!error.response || status === 401 || status === 429 || status >= 500) {
             set({ saveStatus: 'offline' })
             retryTimer = setTimeout(drain, RETRY_MS)
             return
           }
-          if (isExpired(error)) {
+          if (isExpired(error) || isFinished(error)) {
             entries = []
             persist(attemptId)
             markEnded()
+            return
+          }
+          if (isLocked(error)) {
+            // Javob yo'qolmaydi: qulf ochilgach navbat davom etadi.
+            set({ locked: true, saveStatus: 'idle' })
             return
           }
           // Server rad etdi: qayta yuborish foyda bermaydi, navbat to'xtab qolmasin.
@@ -141,7 +186,8 @@ export const useAttemptStore = create((set, get) => {
       set({ question: applyPendingToQuestion(question), currentN: n, questionError: null })
     } catch (error) {
       if (load !== latestLoad) return
-      if (isExpired(error)) markEnded()
+      if (isExpired(error) || isFinished(error)) markEnded()
+      else if (isLocked(error)) set({ locked: true })
       else set({ questionError: errorMessage(error) })
     }
   }
@@ -152,7 +198,7 @@ export const useAttemptStore = create((set, get) => {
     open: async (attemptId) => {
       entries = loadPending(attemptId)
       latestLoad = 0
-      set({ ...initialState, attemptId })
+      set({ ...initialState, attemptId, flagged: loadFlags(attemptId) })
 
       try {
         const attempt = await fetchAttempt(attemptId)
@@ -169,9 +215,11 @@ export const useAttemptStore = create((set, get) => {
           currentN: attempt.current_n,
           exits: attempt.fullscreen_exits,
           exitLimit: attempt.exit_limit,
+          locked: Boolean(attempt.locked),
+          lockReason: attempt.lock_reason ?? null,
           answered: applyPendingAnswers(attempt.answered),
         })
-        await loadQuestion(attempt.current_n)
+        if (!attempt.locked) await loadQuestion(attempt.current_n)
         drain()
       } catch (error) {
         set({ loadError: errorMessage(error) })
@@ -190,6 +238,13 @@ export const useAttemptStore = create((set, get) => {
     },
 
     retryQuestion: () => loadQuestion(get().currentN),
+
+    toggleFlag: (n) => {
+      const { attemptId, flagged } = get()
+      const next = flagged.includes(n) ? without(flagged, n) : addSorted(flagged, n)
+      set({ flagged: next })
+      saveFlags(attemptId, next)
+    },
 
     select: (key) => {
       const { question, answered } = get()
@@ -221,6 +276,18 @@ export const useAttemptStore = create((set, get) => {
 
     flush: drain,
 
+    // Chiqish aniqlanganda darhol (server javobini kutmasdan) qulflanadi.
+    lockNow: () => set({ locked: true }),
+
+    unlock: async (code) => {
+      const { attemptId, currentN } = get()
+      const body = await unlockAttempt(attemptId, code)
+      adopt(body)
+      set({ locked: false, lockReason: null })
+      drain()
+      await loadQuestion(currentN)
+    },
+
     // Har 30 soniyada va aloqa tiklanganda: vaqtni moslaydi, admin yakunlaganini aniqlaydi.
     sync: async () => {
       const { attemptId } = get()
@@ -229,6 +296,7 @@ export const useAttemptStore = create((set, get) => {
         const attempt = await fetchAttempt(attemptId)
         adopt(attempt)
         if (attempt.status !== 'active') markEnded()
+        else set({ locked: Boolean(attempt.locked), lockReason: attempt.lock_reason ?? null })
       } catch {
         // Aloqa yo'q: keyingi urinishda moslanadi.
       }

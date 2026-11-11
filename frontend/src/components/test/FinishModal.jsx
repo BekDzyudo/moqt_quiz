@@ -19,10 +19,42 @@ function Stat({ label, value, className }) {
   )
 }
 
+function NumberList({ label, numbers, onPick, tone }) {
+  const shown = numbers.slice(0, 20)
+  return (
+    <div className="flex flex-col gap-2">
+      <span className={`text-[13px] font-semibold ${tone === 'error' ? 'text-error' : 'text-warning'}`}>{label}:</span>
+      <div className="flex flex-wrap gap-1.5">
+        {shown.map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onPick(n)}
+            aria-label={`${n}-savolga o'tish`}
+            className={`relative h-8 min-w-9 cursor-pointer rounded-lg border px-2 text-[13px] font-bold after:absolute after:-inset-1.5 after:content-[''] ${
+              tone === 'error' ? 'border-error text-error hover:bg-error-soft' : 'border-warning text-warning hover:bg-warning-soft'
+            }`}
+          >
+            {n}
+          </button>
+        ))}
+        {numbers.length > shown.length && <span className="self-center text-[13px] text-ink-600">va yana {numbers.length - shown.length} ta</span>}
+      </div>
+    </div>
+  )
+}
+
 export default function FinishModal({ remaining, onClose }) {
   const total = useAttemptStore((state) => state.total)
   const answered = useAttemptStore((state) => state.answered)
   const finish = useAttemptStore((state) => state.finish)
+  const flagged = useAttemptStore((state) => state.flagged)
+  const goTo = useAttemptStore((state) => state.goTo)
+  const unanswered = Array.from({ length: total }, (_, index) => index + 1).filter((n) => !answered.includes(n))
+  const jump = (n) => {
+    onClose()
+    goTo(n)
+  }
 
   const [finishing, setFinishing] = useState(false)
   const [error, setError] = useState(null)
@@ -61,6 +93,12 @@ export default function FinishModal({ remaining, onClose }) {
           <Stat label="Javob berilgan" value={answered.length} className="bg-surface-muted text-ink-600" />
           <Stat label="Javobsiz" value={total - answered.length} className="bg-error-soft text-error" />
         </div>
+        {unanswered.length > 0 && (
+          <NumberList label="Javobsiz savollar" numbers={unanswered} onPick={jump} tone="error" />
+        )}
+        {flagged.length > 0 && (
+          <NumberList label="Keyinroq qaytaman deb belgilanganlar" numbers={flagged} onPick={jump} tone="warning" />
+        )}
         <p className="m-0 text-ink-600">
           Yakunlagandan keyin javoblarni o'zgartirib bo'lmaydi. Qolgan vaqt:{' '}
           {remaining === null ? '—' : formatRemaining(remaining)}.

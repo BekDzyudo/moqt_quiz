@@ -1,4 +1,4 @@
-import { Check, CircleAlert, Clock, Flag, Loader2, Maximize, WifiOff } from 'lucide-react'
+import { AlarmClock, Check, CircleAlert, Clock, Flag, Loader2, LogOut, Maximize, WifiOff, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { formatRemaining } from '../../lib/serverClock.js'
 import { useAuth } from '../../store/auth.js'
@@ -8,6 +8,7 @@ import Button from '../ui/Button.jsx'
 import EmptyState from '../ui/EmptyState.jsx'
 import ExitKeyModal from './ExitKeyModal.jsx'
 import FinishModal from './FinishModal.jsx'
+import LockedOverlay from './LockedOverlay.jsx'
 import { enterFullscreen, isInTestView, leaveFullscreen, useTestGuards } from './guards.js'
 import QuestionNavigator from './QuestionNavigator.jsx'
 import QuestionPanel from './QuestionPanel.jsx'
@@ -57,6 +58,62 @@ function Timer({ remaining }) {
   )
 }
 
+// Tinglovchi test oynasidan necha marta chiqqanini va limitni ko'rib turadi.
+function ExitsBadge({ exits, limit }) {
+  if (!limit || !exits) return null
+  const last = exits >= limit
+  return (
+    <div
+      title={last ? 'Yana bir marta chiqsangiz, test avtomatik yakunlanadi' : `Ruxsat: ${limit} marta`}
+      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-bold tabular-nums ${
+        last ? 'bg-error-soft text-error' : 'bg-warning-soft text-warning'
+      }`}
+    >
+      Chiqish: {exits} / {limit}
+      <LogOut size={16} strokeWidth={1.9} aria-hidden="true" />
+    </div>
+  )
+}
+
+const TIME_MARKS = [10, 5, 1]
+
+// Vaqt 10, 5 va 1 daqiqa qolganda bir marta ogohlantiradi (sahifa yangilansa, o'tib ketganlari qayta chiqmaydi).
+function TimeWarning({ remaining }) {
+  const shown = useRef(null)
+  const [mark, setMark] = useState(null)
+
+  useEffect(() => {
+    if (remaining === null) return undefined
+    const minutes = remaining / 60000
+    if (shown.current === null) {
+      shown.current = new Set(TIME_MARKS.filter((m) => minutes <= m))
+      return undefined
+    }
+    const hit = TIME_MARKS.find((m) => minutes <= m && !shown.current.has(m))
+    if (hit === undefined) return undefined
+    shown.current.add(hit)
+    // oxlint-disable-next-line react/set-state-in-effect
+    setMark(hit)
+    const timer = setTimeout(() => setMark(null), 10000)
+    return () => clearTimeout(timer)
+  }, [remaining])
+
+  if (mark === null) return null
+  return (
+    <div
+      role="alert"
+      className="mx-8 mt-4 flex items-center gap-3 rounded-2xl border border-warning bg-warning-soft px-5 py-3 font-semibold text-warning"
+    >
+      <AlarmClock size={20} strokeWidth={1.9} aria-hidden="true" className="shrink-0" />
+      <span className="flex-1">
+        Vaqt tugashiga {mark} daqiqa qoldi. Javobsiz savollarni tekshirib oling — vaqt tugaganda test avtomatik
+        yakunlanadi.
+      </span>
+      <Button variant="secondary" size="xs" icon={X} aria-label="Yopish" onClick={() => setMark(null)} />
+    </div>
+  )
+}
+
 export default function ActiveTest({ attemptId, setName, onEnded }) {
   const user = useAuth((state) => state.user)
   const open = useAttemptStore((state) => state.open)
@@ -66,6 +123,10 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
   const flush = useAttemptStore((state) => state.flush)
   const goTo = useAttemptStore((state) => state.goTo)
   const select = useAttemptStore((state) => state.select)
+  const lockNow = useAttemptStore((state) => state.lockNow)
+  const unlock = useAttemptStore((state) => state.unlock)
+  const serverLocked = useAttemptStore((state) => state.locked)
+  const lockReason = useAttemptStore((state) => state.lockReason)
 
   const total = useAttemptStore((state) => state.total)
   const currentN = useAttemptStore((state) => state.currentN)
@@ -119,10 +180,11 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
     (type) => {
       report(type)
       if (type === 'fullscreen_exit' && releasedRef.current) return
+      lockNow()
       setLocked(true)
       setDialog(null)
     },
-    [report],
+    [report, lockNow],
   )
 
   const handleExitKey = useCallback(() => setDialog('exit'), [])
@@ -131,7 +193,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
 
   // Klaviatura faqat test ekrani ochiq turganda ishlaydi.
   useEffect(() => {
-    if (locked || dialog || timeUp) return undefined
+    if (locked || serverLocked || dialog || timeUp) return undefined
 
     const handleKey = (event) => {
       if (event.ctrlKey || event.altKey || event.metaKey) return
@@ -145,7 +207,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [locked, dialog, timeUp, currentN, question, goTo, select])
+  }, [locked, serverLocked, dialog, timeUp, currentN, question, goTo, select])
 
   const handleReturn = async () => {
     setReturnError(null)
@@ -157,6 +219,20 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
       report('return')
     } catch {
       setReturnError("To'liq ekranga o'tib bo'lmadi. Qayta bosing yoki mas'ul shaxsga murojaat qiling.")
+    }
+  }
+
+  // Kod to'g'ri bo'lsa shu bosishning o'zida to'liq ekranga qaytamiz (brauzer foydalanuvchi bosishini talab qiladi).
+  const handleCodeUnlock = async (code) => {
+    await unlock(code)
+    try {
+      if (!isInTestView()) await enterFullscreen()
+      releasedRef.current = false
+      setReleased(false)
+      setLocked(false)
+      report('return')
+    } catch {
+      setLocked(true)
     }
   }
 
@@ -199,6 +275,18 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
     )
   }
 
+  if (serverLocked) {
+    return (
+      <LockedOverlay
+        remaining={remaining}
+        exits={exits}
+        exitLimit={exitLimit}
+        byAdmin={lockReason === 'admin'}
+        onUnlock={handleCodeUnlock}
+      />
+    )
+  }
+
   if (locked) {
     return (
       <>
@@ -234,6 +322,7 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
           <div className="rounded-full bg-surface-muted px-3.5 py-2 text-[15px] font-bold">
             {answeredCount} / {total} javob
           </div>
+          <ExitsBadge exits={exits} limit={exitLimit} />
           <Timer remaining={remaining} />
           <ThemeToggle />
           {released && (
@@ -246,6 +335,8 @@ export default function ActiveTest({ attemptId, setName, onEnded }) {
           </Button>
         </div>
       </header>
+
+      <TimeWarning remaining={remaining} />
 
       <main className="flex flex-1 flex-wrap items-start gap-6 p-8">
         <QuestionPanel />

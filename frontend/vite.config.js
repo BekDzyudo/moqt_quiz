@@ -6,8 +6,9 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self'",
   // React va recharts `style` atributini ishlatadi; Tailwind esa alohida fayl.
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  'font-src https://fonts.gstatic.com',
+  "style-src 'self' 'unsafe-inline'",
+  // Shriftlar saytning o'zidan (@fontsource), data: URI emas.
+  "font-src 'self'",
   "img-src 'self' blob:",
   "connect-src 'self'",
   "object-src 'none'",
@@ -39,5 +40,9 @@ export default defineConfig(({ mode }) => {
     // Production sarlavhalari: docs/XAVFSIZLIK.md dagi nginx sozlamasi bilan bir xil.
     // Dev serverda qo'yilmaydi, chunki HMR ichki skript ishlatadi.
     preview: { headers: SECURITY_HEADERS, proxy },
+    build: {
+      // Kichik shriftlar data: URI bo'lib CSS ichiga kirmasin: CSP font-src 'self'.
+      assetsInlineLimit: (file) => (/\.(woff2?|ttf|otf)$/.test(file) ? false : undefined),
+    },
   }
 })

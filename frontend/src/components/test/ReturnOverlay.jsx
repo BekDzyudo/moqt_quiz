@@ -2,6 +2,7 @@ import { Maximize, TriangleAlert } from 'lucide-react'
 import { formatRemaining } from '../../lib/serverClock.js'
 import Alert from '../ui/Alert.jsx'
 import Button from '../ui/Button.jsx'
+import ExitLimitNote from './ExitLimitNote.jsx'
 
 // Bu qatlam ochiq turganda savol va variantlar DOM'da umuman bo'lmaydi.
 export default function ReturnOverlay({ remaining, exits, exitLimit, error, onReturn }) {
@@ -38,10 +39,7 @@ export default function ReturnOverlay({ remaining, exits, exitLimit, error, onRe
           </div>
         </div>
 
-        <p className="m-0 text-[13px] leading-[19px] text-ink-600">
-          {exitLimit} martadan ortiq chiqish urinishni "shubhali" deb belgilaydi va adminga
-          ko'rsatiladi.
-        </p>
+        <ExitLimitNote exits={exits} exitLimit={exitLimit} />
 
         {error && <Alert tone="error">{error}</Alert>}
 

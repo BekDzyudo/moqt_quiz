@@ -1,4 +1,4 @@
-import { Clock, Play } from 'lucide-react'
+import { Clock, Keyboard, Play } from 'lucide-react'
 import { useState } from 'react'
 import { startTest } from '../../api/attempt.js'
 import { errorMessage } from '../../api/client.js'
@@ -11,9 +11,19 @@ import StatusBadge from '../ui/StatusBadge.jsx'
 import { enterFullscreen, leaveFullscreen } from './guards.js'
 import PageBar from './PageBar.jsx'
 
-const RULES = [
-  "Test boshlangach sahifa to'liq ekranga o'tadi. Undan chiqsangiz savollar yopiladi, vaqt esa to'xtamaydi.",
-  'Vaqt server bo\'yicha hisoblanadi. Sahifani yangilasangiz yoki aloqa uzilsa, test qolgan joyidan davom etadi.',
+function Kbd({ children }) {
+  return (
+    <kbd className="inline-flex min-w-6 items-center justify-center rounded-md border border-border-400 bg-surface-card px-1.5 font-sans text-[12px] font-bold text-ink-900">
+      {children}
+    </kbd>
+  )
+}
+
+const rulesFor = (limit) => [
+  "Test boshlangach sahifa to'liq ekranga o'tadi. Boshqa oyna yoki dasturga o'tsangiz, test qulflanadi: davom etish uchun administrator ochish kodini beradi. Vaqt bu paytda to'xtamaydi.",
+  `Test oynasidan ${limit} martadan ortiq chiqsangiz, test shu paytgacha bergan javoblaringiz bilan avtomatik yakunlanadi.`,
+  "Telefon, konspekt va boshqa yordamchi vositalardan foydalanish taqiqlanadi. Qoidabuzarlik aniqlansa, administrator testni qulflaydi yoki yakunlaydi.",
+  "Vaqt server bo'yicha hisoblanadi. Sahifani yangilasangiz yoki internet uzilsa, test qolgan joyidan davom etadi.",
   'Har bir javob darhol saqlanadi. Vaqt tugaganda test avtomatik yakunlanadi.',
   'Testni faqat bir marta boshlash mumkin.',
 ]
@@ -89,10 +99,21 @@ export default function WaitingScreen({ test, onStarted }) {
           <Card padding="p-8" className="flex flex-col gap-4">
             <h2 className="m-0 text-xl leading-7 font-bold">Test qoidalari</h2>
             <ol className="m-0 flex list-decimal flex-col gap-2 pl-5">
-              {RULES.map((rule) => (
+              {rulesFor(test.exit_limit ?? 3).map((rule) => (
                 <li key={rule}>{rule}</li>
               ))}
             </ol>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-surface-muted px-4 py-3 text-[13px] leading-[19px] text-ink-600">
+              <span className="flex items-center gap-1.5 font-semibold text-ink-900">
+                Klaviatura <Keyboard size={16} strokeWidth={1.9} aria-hidden="true" />
+              </span>
+              <span>
+                <Kbd>1</Kbd>–<Kbd>4</Kbd> variant tanlash
+              </span>
+              <span>
+                <Kbd>←</Kbd> <Kbd>→</Kbd> oldingi / keyingi savol
+              </span>
+            </div>
             <Checkbox
               label="Qoidalar bilan tanishdim va roziman"
               checked={agreed}

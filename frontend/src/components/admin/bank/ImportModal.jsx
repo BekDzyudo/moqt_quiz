@@ -12,12 +12,7 @@ import StatTile from '../../ui/StatTile.jsx'
 import StatusBadge from '../../ui/StatusBadge.jsx'
 
 const PROBLEM_COLUMNS = [
-  { key: 'row', header: 'Qator' },
-  {
-    key: 'text',
-    header: 'Savol',
-    render: (problem) => problem.text || <span className="text-ink-400">Matn yo'q</span>,
-  },
+  { key: 'row', header: 'Qator', render: (problem) => problem.row ?? 'Fayl' },
   {
     key: 'errors',
     header: 'Sabab',
@@ -51,7 +46,15 @@ const SAMPLE_ROWS = [
     d: 'SMTP',
     correct: 'B',
   },
-  { id: 2, text: "OSI modelida nechta pog'ona bor?", a: '4', b: '5', c: '6', d: '7', correct: 'D' },
+  {
+    id: 2,
+    text: "OSI modelida nechta pog'ona bor?",
+    a: '4',
+    b: '5',
+    c: '6',
+    d: '7',
+    correct: 'D',
+  },
 ]
 
 function SelectStep({ sets, defaultSet, onPreview, onClose }) {
@@ -136,12 +139,20 @@ function SelectStep({ sets, defaultSet, onPreview, onClose }) {
         <DataTable compact columns={SAMPLE_COLUMNS} rows={SAMPLE_ROWS} minWidth={640} />
         <ul className="m-0 flex list-disc flex-col gap-1 pl-5 text-[13px] text-ink-600">
           <li className="leading-[19px]">Birinchi qator sarlavha, savollar ikkinchi qatordan boshlanadi.</li>
-          <li className="leading-[19px]">Oxirgi ustunda to'g'ri javob harfi: A, B, C yoki D.</li>
+          <li className="leading-[19px]">"to'g'ri" ustunida to'g'ri javob harfi: A, B, C yoki D.</li>
           <li className="leading-[19px]">
             Word faylda: raqamlangan savol, keyin A)…D) qatorlar, to'g'ri variant oldida * yoki qalin.
           </li>
+          <li className="leading-[19px]">
+            Ixtiyoriy: Excel'ga 7-ustun "yo'nalish" qo'shib, to'plam nomini yozsangiz, nomi mos
+            kelmagan savollar ham rad etiladi.
+          </li>
           <li className="leading-[19px]">Shablondagi namuna savollarni o'chirib, o'z savollaringizni kiriting.</li>
         </ul>
+        <Alert tone="info">
+          Bitta ham xato bo'lsa, fayl to'liq rad etiladi: boshqa to'plamda bor savol, bir xil
+          variantlar yoki takror savol. Xatolarni tuzatib, faylni qayta yuklang.
+        </Alert>
       </section>
 
       {templateError && <Alert tone="error">{templateError}</Alert>}
@@ -191,15 +202,17 @@ function PreviewStep({ preview, onBack, onDone }) {
       </div>
 
       {preview.problems.length > 0 && (
+        <Alert tone="error">
+          Fayl rad etildi: {preview.problems.length} ta xato topildi. Hech qaysi savol saqlanmaydi.
+          Xatolarni tuzatib, faylni qayta yuklang.
+        </Alert>
+      )}
+
+      {preview.problems.length > 0 && (
         <section className="flex flex-col gap-2">
-          <h3 className="m-0 text-[17px] leading-6 font-semibold">Saqlanmaydigan qatorlar</h3>
+          <h3 className="m-0 text-[17px] leading-6 font-semibold">Xatolar</h3>
           <div className="max-h-64 overflow-y-auto">
-            <DataTable
-              columns={PROBLEM_COLUMNS}
-              rows={preview.problems}
-              rowKey={(problem) => problem.row}
-              minWidth={560}
-            />
+            <DataTable columns={PROBLEM_COLUMNS} rows={preview.problems} minWidth={480} />
           </div>
         </section>
       )}

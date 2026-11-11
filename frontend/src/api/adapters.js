@@ -5,7 +5,13 @@ const status = (value) => (value === 'draft' ? 'closed' : value)
 
 export const adaptGroup = (group) => group && { ...group, test_status: status(group.test_status) }
 
-export const adaptMyTest = (test) => test && { ...test, test_status: status(test.test_status) }
+// Backend jarayondagi urinishni "in_progress" deb qaytaradi; sahifalar "active" kutadi.
+const attemptStatus = (value) => (value === 'in_progress' ? 'active' : value)
+
+export const adaptAttempt = (attempt) => attempt && { ...attempt, status: attemptStatus(attempt.status) }
+
+export const adaptMyTest = (test) =>
+  test && { ...test, test_status: status(test.test_status), attempt: adaptAttempt(test.attempt) }
 
 function progressText(progress, liveStatus) {
   if (!progress || typeof progress !== 'object') return progress ?? null
@@ -68,12 +74,22 @@ function bucketDistribution(perScore, questionCount, passScore) {
   })
 }
 
+// Backend shubha sababini {code, detail} obyekt sifatida beradi; sahifa matn chiqaradi.
+const reasonText = (reason) =>
+  typeof reason === 'string' ? reason : (reason?.detail ?? reason?.code ?? '')
+
+export const adaptSuspicious = (item) => ({
+  ...item,
+  reasons: (item.reasons ?? []).map(reasonText).filter(Boolean),
+})
+
 export function adaptResults(results) {
   if (!results) return results
-  const { group, set, summary, distribution = [], rows = [] } = results
+  const { group, set, summary, distribution = [], rows = [], suspicious } = results
   const perScore = distribution.length > 0 && distribution[0].label === undefined
   return {
     ...results,
+    ...(suspicious ? { suspicious: suspicious.map(adaptSuspicious) } : {}),
     group: {
       ...group,
       member_count: group.member_count ?? summary?.members ?? rows.length,

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, CircleAlert, Loader2, RotateCw } from 'lucide-react'
+import { Bookmark, BookmarkCheck, ChevronLeft, ChevronRight, CircleAlert, CircleDashed, Loader2, RotateCw } from 'lucide-react'
 import { useAttemptStore } from '../../store/attempt.js'
 import Button from '../ui/Button.jsx'
 import EmptyState from '../ui/EmptyState.jsx'
@@ -38,6 +38,9 @@ export default function QuestionPanel() {
   const select = useAttemptStore((state) => state.select)
   const goTo = useAttemptStore((state) => state.goTo)
   const retryQuestion = useAttemptStore((state) => state.retryQuestion)
+  const answered = useAttemptStore((state) => state.answered)
+  const flagged = useAttemptStore((state) => state.flagged)
+  const toggleFlag = useAttemptStore((state) => state.toggleFlag)
 
   const panelClass =
     'flex min-w-0 flex-[999_1_560px] flex-col gap-7 rounded-2xl border border-border-200 bg-surface-card p-10 shadow-card'
@@ -68,10 +71,34 @@ export default function QuestionPanel() {
     )
   }
 
+  const isFlagged = flagged.includes(question.n)
+  const isLast = currentN === total
+  // Oxirgi savoldan keyin: birinchi javobsiz savolga qaytish taklifi.
+  const firstUnanswered = Array.from({ length: total }, (_, index) => index + 1).find(
+    (n) => n !== currentN && !answered.includes(n),
+  )
+
   return (
     <section className={panelClass}>
-      <div className="text-[13px] leading-[18px] font-bold text-brand-500">
-        Savol {question.n} / {total}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-[13px] leading-[18px] font-bold text-brand-500">
+          Savol {question.n} / {total}
+        </div>
+        <button
+          type="button"
+          aria-pressed={isFlagged}
+          onClick={() => toggleFlag(question.n)}
+          className={`relative inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-[13px] font-semibold after:absolute after:-inset-1 after:content-[''] ${
+            isFlagged ? 'border-warning bg-warning-soft text-warning' : 'border-border-400 text-ink-600 hover:bg-surface-muted'
+          }`}
+        >
+          {isFlagged ? 'Belgilangan' : 'Keyinroq qaytaman'}
+          {isFlagged ? (
+            <BookmarkCheck size={16} strokeWidth={1.9} aria-hidden="true" />
+          ) : (
+            <Bookmark size={16} strokeWidth={1.9} aria-hidden="true" />
+          )}
+        </button>
       </div>
       <h1 className="m-0 text-[26px] leading-9 font-bold">{question.text}</h1>
       {question.image_url && (
@@ -105,14 +132,18 @@ export default function QuestionPanel() {
         >
           Oldingi
         </Button>
-        <Button
-          icon={ChevronRight}
-          px="px-[22px]"
-          disabled={currentN === total}
-          onClick={() => goTo(currentN + 1)}
-        >
-          Keyingi
-        </Button>
+        <span className="hidden self-center text-[12px] text-ink-600 md:inline">
+          Klaviatura: 1–4 — variant, ← → — savollar
+        </span>
+        {isLast && firstUnanswered ? (
+          <Button variant="secondary" icon={CircleDashed} onClick={() => goTo(firstUnanswered)}>
+            Javobsiz savolga ({firstUnanswered})
+          </Button>
+        ) : (
+          <Button icon={ChevronRight} px="px-[22px]" disabled={isLast} onClick={() => goTo(currentN + 1)}>
+            Keyingi
+          </Button>
+        )}
       </div>
     </section>
   )

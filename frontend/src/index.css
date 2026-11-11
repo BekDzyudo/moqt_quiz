@@ -79,7 +79,7 @@
 
 /* design/tokens.json dagi nomlar utility sifatida: bg-brand-soft, text-ink-600 ... */
 @theme {
-  --font-sans: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Manrope Variable', 'Manrope', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --color-brand-900: #0f4a7c;

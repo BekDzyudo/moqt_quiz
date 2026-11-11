@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { saveBlob } from '../lib/download.js'
-import { adaptResults } from './adapters.js'
+import { adaptResults, adaptSuspicious } from './adapters.js'
 import { api } from './client.js'
 import { useRequest } from './useRequest.js'
 
@@ -19,7 +19,8 @@ export function useResults(groupId) {
   )
 }
 
-const fetchSuspicious = () => api.get('/results/suspicious/').then(data)
+const fetchSuspicious = () =>
+  api.get('/results/suspicious/').then(data).then((items) => (items ?? []).map(adaptSuspicious))
 
 export const useSuspiciousAttempts = () => useRequest(fetchSuspicious)
 
@@ -33,3 +34,12 @@ export const downloadResultsExcel = (group) =>
 
 export const downloadProtocol = (group) =>
   download('/results/protocol.pdf', group.id, `${group.name}-protokol.pdf`)
+
+// Admin: urinishdagi har savolga nima belgilangani va to'g'ri javob (apellyatsiya uchun).
+export const fetchAttemptAnswers = (attemptId) => api.get(`/results/attempts/${attemptId}/`).then(data)
+
+// Admin: bitta urinishning natija varaqasi (PDF).
+export async function downloadAttemptReport(attemptId, filename) {
+  const { data: blob } = await api.get(`/results/attempts/${attemptId}/report.pdf`, { responseType: 'blob' })
+  saveBlob(blob, filename)
+}

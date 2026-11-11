@@ -1,4 +1,4 @@
-import { ChartColumn, FileText, House, Layers, List, Shield, Users } from 'lucide-react'
+import { Activity, ChartColumn, FileText, House, Layers, List, Shield, Users } from 'lucide-react'
 
 export const ADMIN_PAGES = [
   {
@@ -28,6 +28,13 @@ export const ADMIN_PAGES = [
     description: 'Test topshiradigan guruhlar va ularning holati',
     icon: Users,
     stage: 3,
+  },
+  {
+    to: '/admin/test-jarayoni',
+    label: 'Test jarayoni',
+    description: 'Kim hozir test ishlayapti, kim qulflangan; ochish kodini berish',
+    icon: Activity,
+    stage: 6,
   },
   {
     to: '/admin/natijalar',

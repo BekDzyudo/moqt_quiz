@@ -14,7 +14,7 @@ function NavItem({ page }) {
   const linkClass = ({ isActive }) =>
     `flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] no-underline ${
       isActive
-        ? 'bg-brand-soft font-bold text-brand-ink-strong hover:text-brand-ink-strong'
+        ? "relative bg-brand-soft font-bold text-brand-ink-strong before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-brand-700 before:content-[''] hover:text-brand-ink-strong"
         : 'font-medium text-ink-600 hover:bg-surface-muted hover:text-ink-900'
     }`
 
